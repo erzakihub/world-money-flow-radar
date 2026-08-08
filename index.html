@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="AlphaPulse is an advanced financial research and stock screening platform featuring live watchlists, upcoming earnings results, sectoral indices flow, and technical momentum calculators.">
+  <title>AlphaPulse | Advanced Momentum Stock Screener & watchlists</title>
+  
+  <!-- FontAwesome for Premium Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- --- SIDEBAR NAV --- -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="pulse-dot"></div>
+      <h1>AlphaPulse</h1>
+    </div>
+    
+    <nav class="sidebar-nav">
+      <div class="nav-item active" id="nav-watchlist" data-view="watchlist-view">
+        <i class="fa-solid fa-list-check"></i>
+        <span>Live Watchlist</span>
+      </div>
+      <div class="nav-item" id="nav-scanner" data-view="scanner-view">
+        <i class="fa-solid fa-wand-magic-sparkles"></i>
+        <span>Momentum Scanner</span>
+      </div>
+      <div class="nav-item" id="nav-sectors" data-view="sectors-view">
+        <i class="fa-solid fa-chart-pie"></i>
+        <span>Sectoral Heatmap</span>
+      </div>
+    </nav>
+    
+    <div class="sidebar-indices-title">Sectoral Indices</div>
+    <div class="sidebar-indices-list" id="sidebar-indices">
+      <!-- Sector index items will be dynamically injected here -->
+    </div>
+  </aside>
+
+  <!-- --- MAIN CONTENT WINDOW --- -->
+  <main class="main-content">
+    
+    <!-- --- HEADER --- -->
+    <header>
+      <div class="search-container">
+        <div class="search-input-wrapper">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" class="search-input" id="stock-search" placeholder="Search stock symbol or company name... (e.g. NVDA, TCS)">
+        </div>
+        <!-- Autocomplete Dropdown -->
+        <div class="search-results-dropdown" id="search-dropdown"></div>
+      </div>
+      
+      <div class="header-alerts">
+        <!-- Results alerts trigger -->
+        <div class="result-alert-badge" id="results-alert-badge" style="display: none;">
+          <i class="fa-solid fa-bell"></i>
+          <span id="results-alert-text">Results Alert</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- --- VIEW 1: WATCHLIST VIEW (DEFAULT) --- -->
+    <section class="dashboard-container" id="watchlist-view">
+      <div class="dashboard-title-row">
+        <h2>Live Streaming Watchlist</h2>
+        <span id="watchlist-count">0 Stocks Active</span>
+      </div>
+      
+      <div class="dashboard-grid">
+        <!-- Left: Watchlist Grid -->
+        <div class="glass" style="min-height: 450px;">
+          <div class="card-header">
+            <h3><i class="fa-solid fa-eye"></i> My Watchlist</h3>
+            <span class="text-muted" style="font-size: 12px;"><i class="fa-solid fa-circle-nodes" style="color: var(--accent-primary); font-size: 8px;"></i> Live Updates Active</span>
+          </div>
+          <div class="watchlist-grid" id="watchlist-container">
+            <!-- Dynamically populated or empty fallback -->
+          </div>
+        </div>
+        
+        <!-- Right: Upcoming Results Panel -->
+        <div class="glass" style="display: flex; flex-direction: column;">
+          <div class="card-header">
+            <h3><i class="fa-solid fa-calendar-days"></i> Upcoming Results</h3>
+          </div>
+          <div style="flex-grow: 1; overflow-y: auto; padding: 24px;">
+            <table class="results-table" id="upcoming-results-table">
+              <thead>
+                <tr>
+                  <th>Stock</th>
+                  <th>Date</th>
+                  <th>Catalyst Alert</th>
+                </tr>
+              </thead>
+              <tbody id="upcoming-results-body">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- --- VIEW 2: MOMENTUM SCANNER VIEW --- -->
+    <section class="dashboard-container" id="scanner-view" style="display: none;">
+      <div class="dashboard-title-row">
+        <h2>Advanced Momentum Scanner</h2>
+        <span>Rules-based screening & custom queries</span>
+      </div>
+      
+      <div class="glass">
+        <!-- Preset Momentum Scanners -->
+        <div class="scanner-controls">
+          <div class="preset-filters" id="preset-buttons">
+            <button class="preset-btn active" data-preset="all">All Universe</button>
+            <button class="preset-btn" data-preset="minervini">Minervini Trend Template</button>
+            <button class="preset-btn" data-preset="oneil-rs">O'Neil RS Leaders (RS >= 80)</button>
+            <button class="preset-btn" data-preset="vcp">VCP (Volatility Contraction & Vol Dryup)</button>
+            <button class="preset-btn" data-preset="rsi-volume">RSI & Volume Breakout</button>
+          </div>
+          
+          <!-- Custom Query Builder (screener.in format) -->
+          <div class="query-box-container">
+            <input type="text" class="query-input" id="query-input" placeholder="Custom query: e.g. RSI > 60 AND Price > SMA(50) AND Volume > 2">
+            <button class="query-btn" id="run-query-btn">Run Query</button>
+          </div>
+          <div id="query-error" style="color: var(--color-danger); font-size: 12px; margin-top: -12px; display: none;"></div>
+        </div>
+        
+        <!-- Table Results -->
+        <div class="results-table-container">
+          <table class="results-table" id="scanner-results-table">
+            <thead>
+              <tr>
+                <th>Symbol</th>
+                <th>Company Name</th>
+                <th>Price</th>
+                <th>Market Cap</th>
+                <th>P/E</th>
+                <th>RSI (14)</th>
+                <th>Vol Ratio</th>
+                <th>RS Rating</th>
+                <th>Momentum Score</th>
+                <th>Watchlist</th>
+              </tr>
+            </thead>
+            <tbody id="scanner-results-body">
+              <!-- Dynamically populated rows -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- --- VIEW 3: SECTORAL HEATMAP VIEW --- -->
+    <section class="dashboard-container" id="sectors-view" style="display: none;">
+      <div class="dashboard-title-row">
+        <h2>Sectoral Flow Heatmap</h2>
+        <span>Understand which sectors leading institutional money is entering</span>
+      </div>
+      
+      <div class="glass">
+        <div class="card-header">
+          <h3><i class="fa-solid fa-fire"></i> Sector Rotation Heatmap (1D Change %)</h3>
+        </div>
+        <div class="sectors-grid" id="sectors-heatmap-container">
+          <!-- Dynamic Sector Cards -->
+        </div>
+      </div>
+
+      <!-- Sector Breakdown Table -->
+      <div class="glass" style="margin-top: 16px;">
+        <div class="card-header">
+          <h3 id="sector-table-title"><i class="fa-solid fa-folder-open"></i> Sector Constituents</h3>
+        </div>
+        <div class="results-table-container">
+          <table class="results-table" id="sector-constituents-table">
+            <thead>
+              <tr>
+                <th>Symbol</th>
+                <th>Company</th>
+                <th>Price</th>
+                <th>Market Cap</th>
+                <th>P/E</th>
+                <th>RSI (14)</th>
+                <th>Momentum Score</th>
+                <th>Watchlist</th>
+              </tr>
+            </thead>
+            <tbody id="sector-constituents-body">
+              <!-- Dynamically loaded on sector click -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- --- DETAIL POPUP / TECHNICAL ANALYSIS MODAL --- -->
+  <dialog class="details-modal glass" id="stock-details-modal">
+    <div class="details-dialog glass">
+      
+      <!-- Dialog Header -->
+      <div class="details-header">
+        <div class="details-title-block" style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+          <span class="details-ticker" id="details-symbol">AAPL</span>
+          <span class="details-company-name" id="details-name">Apple Inc.</span>
+          <span class="badge" id="details-sector-badge">Technology</span>
+          <span class="details-price-badge" id="details-header-price-block" style="margin-left: 16px; font-weight: 700; font-size: 20px; display: flex; align-items: center; gap: 8px;">
+            <span id="details-header-price" style="font-family: var(--font-sans);">₹0.00</span>
+            <span id="details-header-change" style="font-size: 13px; font-weight: 600;">(0.00%)</span>
+          </span>
+        </div>
+        <i class="fa-solid fa-circle-xmark close-btn" id="close-modal-btn"></i>
+      </div>
+      
+      <!-- Dialog Body -->
+      <div class="details-body">
+        
+        <!-- Grid: Interactive Chart + Key Ratios -->
+        <div class="details-grid-top">
+          <!-- Chart -->
+          <div class="glass chart-card">
+            <div class="card-header" style="border: none; padding: 0 0 16px 0;">
+              <h3><i class="fa-solid fa-chart-line"></i> Technical Chart (260 Days)</h3>
+              <div class="preset-filters" style="gap: 6px;">
+                <span class="badge secondary">Candles</span>
+                <span class="badge secondary" id="chart-ma50-legend">MA(50)</span>
+                <span class="badge secondary" id="chart-ma200-legend">MA(200)</span>
+              </div>
+            </div>
+            <div class="chart-wrapper">
+              <canvas id="details-chart"></canvas>
+            </div>
+          </div>
+          
+          <!-- Key Ratios & Scores -->
+          <div class="glass stats-card">
+            <div class="stats-title">Advanced Metrics Dashboard</div>
+            
+            <div class="gauge-container">
+              <div class="momentum-gauge" id="momentum-gauge-circle" style="background: conic-gradient(var(--accent-primary) 0%, rgba(255,255,255,0.05) 0%);">
+                <div class="momentum-gauge-inner">
+                  <span class="gauge-score" id="gauge-score-value">84</span>
+                  <span class="gauge-label">Momentum Score</span>
+                </div>
+              </div>
+              <div class="gauge-verdict" id="gauge-verdict-text">Strong Momentum</div>
+            </div>
+            
+            <div class="stats-grid">
+              <div class="stat-item">
+                <span class="stat-label">Market Cap</span>
+                <span class="stat-value" id="stat-mcap">$2,970B</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">P/E Ratio</span>
+                <span class="stat-value" id="stat-pe">30.1</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">EPS Growth (YoY)</span>
+                <span class="stat-value" id="stat-eps">+12.0%</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Sales Growth (YoY)</span>
+                <span class="stat-value" id="stat-sales">+8.5%</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Inst. Accumulation</span>
+                <span class="stat-value" id="stat-inst">+0.8%</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">RSI (14)</span>
+                <span class="stat-value" id="stat-rsi">62.5</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Checklist: Minervini Template Rules & Description -->
+        <div class="checklist-container">
+          
+          <!-- Mark Minervini Trend Checklist -->
+          <div class="glass checklist-block">
+            <div class="stats-title"><i class="fa-solid fa-square-check"></i> Minervini Trend Template Checklist</div>
+            <div class="checklist-list" id="minervini-checklist-root">
+              <!-- Checklist items injected dynamically -->
+            </div>
+          </div>
+          
+          <!-- Company Profile & Upcoming Results -->
+          <div class="glass checklist-block" style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <div class="stats-title"><i class="fa-solid fa-file-invoice"></i> Business Profile</div>
+              <p id="details-desc" style="font-size: 13px; line-height: 1.6; color: var(--text-secondary); margin-top: 12px;">
+                Company description goes here...
+              </p>
+            </div>
+            
+            <div style="border-top: 1px solid var(--border-card); padding-top: 16px; margin-top: 20px; display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <span class="stat-label">Upcoming Financial Results</span>
+                <div style="font-family: var(--font-heading); font-size: 15px; font-weight: 700; color: var(--color-warning); margin-top: 4px;" id="details-result-date">
+                  June 20, 2026
+                </div>
+              </div>
+              <button class="watchlist-toggle-btn" id="details-watchlist-btn">Add to Watchlist</button>
+            </div>
+          </div>
+          
+        </div>
+        
+      </div>
+      
+    </div>
+  </dialog>
+
+  <!-- Type module script linking application coordinator -->
+  <script type="module" src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3D Boiler Tube Panel Visualizer | Advanced Engineering Dashboard</title>
+  <link rel="stylesheet" href="style.css?v=20260620-2323">
+  <!-- Google Fonts: Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+  <!-- Loading Screen -->
+  <div id="loading-overlay">
+    <div class="spinner"></div>
+    <div class="loading-text">INITIALIZING 3D ENGINE...</div>
+  </div>
+
+  <div id="app-container">
+    <!-- 3D Canvas Viewport -->
+    <div id="canvas-container">
+      <!-- Camera Direction View Gizmo -->
+      <div id="orientation-gizmo"></div>
+
+      <!-- Floating Information Tooltip -->
+      <div id="tooltip-card" class="floating-card">
+        <h3 id="tooltip-title">Component Inspector</h3>
+        <p id="tooltip-desc">Hover over a 3D component to inspect its properties.</p>
+        <div id="tooltip-specs"></div>
+      </div>
+
+      <!-- Floating Legend Card -->
+      <div id="legend-card" class="floating-card">
+        <div class="legend-title">Color Legend</div>
+        <div class="legend-item">
+          <div class="legend-color color-tube-pink"></div>
+          <span>Tubes (P1-3, P16-18)</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color color-tube"></div>
+          <span>Tubes (P4-6, P13-15)</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color color-tube-brown"></div>
+          <span>Tubes (P7-12)</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color color-fin"></div>
+          <span>Fin Plates</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color color-header"></div>
+          <span>Headers</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color color-ltrh"></div>
+          <span>LTRH Coils</span>
+        </div>
+      </div>
+
+      <!-- Floating View Controls -->
+      <div id="view-controls" class="floating-card">
+        <button id="btn-cam-iso" class="active" title="Isometric View">
+          <i data-lucide="box"></i> ISO
+        </button>
+        <button id="btn-cam-front" title="Front View">
+          <i data-lucide="eye"></i> FRONT
+        </button>
+        <button id="btn-cam-side" title="Side View">
+          <i data-lucide="arrow-right-left"></i> SIDE
+        </button>
+        <button id="btn-cam-top" title="Top View">
+          <i data-lucide="arrow-up"></i> TOP
+        </button>
+        <button id="btn-rotate-180" title="Rotate 180 Degrees">
+          <i data-lucide="refresh-cw"></i> ROTATE 180
+        </button>
+        <div class="control-separator"></div>
+        <button id="btn-tool-orbit" class="active" title="Orbit Mode (Left-click to rotate)">
+          <i data-lucide="orbit"></i> ORBIT
+        </button>
+        <button id="btn-tool-pan" title="Pan Mode (Left-click to drag/move model)">
+          <i data-lucide="hand"></i> PAN
+        </button>
+      </div>
+
+      <!-- Floating Side Buttons -->
+      <button id="dimensions-toggle" class="active" title="Toggle Dimension Lines">
+        <i data-lucide="ruler"></i>
+      </button>
+      <button id="btn-interactive-ruler" title="Interactive Measurement Ruler (Click two points)">
+        <i data-lucide="pencil-ruler"></i>
+      </button>
+      <button id="btn-screenshot" title="Take Screenshot (Transparent Clipart)">
+        <i data-lucide="camera"></i>
+      </button>
+      <button id="sidebar-toggle" title="Toggle Sidebar">
+        <i data-lucide="menu"></i>
+      </button>
+    </div>
+
+    <!-- Configuration & Inspection Sidebar -->
+    <aside id="sidebar">
+      <div class="sidebar-header">
+        <div>
+          <h1><i data-lucide="activity"></i> Boiler Panel 3D</h1>
+          <p>Model Generator &amp; Spec Inspect</p>
+        </div>
+        <button id="btn-reset" title="Reset to Defaults">
+          <i data-lucide="rotate-ccw"></i>
+        </button>
+      </div>
+
+      <div class="sidebar-content">
+        <!-- Model Layer Control -->
+        <section class="control-group">
+          <h2>Model Layer Control</h2>
+          <div style="display:flex; flex-direction:column; gap:10px; padding: 4px 0;">
+            <label class="checkbox-field">
+              <input type="checkbox" id="layer-waterwall" checked style="accent-color:var(--tube-color);">
+              <span>Layer 1 - Water Walls (Front & Rear)</span>
+            </label>
+            <label class="checkbox-field">
+              <input type="checkbox" id="layer-roof" checked style="accent-color:var(--accent-color);">
+              <span>Layer 2 - Roof Panel Assembly</span>
+            </label>
+            <label class="checkbox-field">
+              <input type="checkbox" id="layer-ltrh" checked style="accent-color:#a855f7;">
+              <span>Layer 3 - LTRH Assembly</span>
+            </label>
+          </div>
+        </section>
+
+        <!-- Visualization Settings -->
+        <section class="control-group">
+          <h2>Visualization</h2>
+          <div class="input-field">
+            <div class="input-label-row">
+              <span>Exploded View</span>
+              <span id="val-exploded" class="input-value">0%</span>
+            </div>
+            <input type="range" id="input-exploded" min="0" max="100" value="0">
+          </div>
+          <div class="input-field">
+            <span class="input-label-row" style="margin-bottom: 4px;">Model Detail</span>
+            <div class="btn-grid-3">
+              <button id="btn-quality-low" title="Low Detail (Maximum Performance)">Low</button>
+              <button id="btn-quality-medium" title="Medium Detail (Balanced)">Medium</button>
+              <button id="btn-quality-high" class="active" title="High Detail (Best Quality)">High</button>
+            </div>
+          </div>
+          <div class="input-field">
+            <span class="input-label-row" style="margin-bottom: 4px;">Render Mode</span>
+            <div class="btn-grid-3">
+              <button id="btn-mode-solid" class="active">Solid</button>
+              <button id="btn-mode-xray">X-Ray</button>
+              <button id="btn-mode-wireframe">Wire</button>
+            </div>
+          </div>
+          <div class="input-field">
+            <span class="input-label-row" style="margin-bottom: 4px;">Lighting Direction</span>
+            <div class="btn-grid-4">
+              <button id="btn-light-default" class="active" title="Default Light">Default</button>
+              <button id="btn-light-front" title="Front Light">Front</button>
+              <button id="btn-light-rear" title="Rear Light">Rear</button>
+              <button id="btn-light-left" title="Left Light">Left</button>
+              <button id="btn-light-right" title="Right Light">Right</button>
+              <button id="btn-light-top" title="Top Light">Top</button>
+              <button id="btn-light-bottom" title="Bottom Light">Bottom</button>
+              <button id="btn-light-top-front" title="Top & Front Light (No Shadows)">Top &amp; Front</button>
+            </div>
+          </div>
+          <div class="input-field">
+            <label class="checkbox-field">
+              <input type="checkbox" id="input-rotate-model">
+              <span>Rotate Model 180° (Z-Axis)</span>
+            </label>
+          </div>
+          <div class="input-field">
+            <label class="checkbox-field">
+              <input type="checkbox" id="input-show-labels" checked>
+              <span>Show Text &amp; Details</span>
+            </label>
+          </div>
+        </section>
+
+        <!-- Color Configuration -->
+        <section class="control-group">
+          <h2>Color Configuration</h2>
+          <div class="input-field">
+            <div class="input-label-row">
+              <span>Tubes Color</span>
+              <div class="color-picker-wrapper">
+                <input type="color" id="input-color-tube" value="#10b981">
+                <span id="val-color-tube" class="hex-value">#10b981</span>
+              </div>
+            </div>
+          </div>
+          <div class="input-field">
+            <div class="input-label-row">
+              <span>Fin Plates Color</span>
+              <div class="color-picker-wrapper">
+                <input type="color" id="input-color-fin" value="#f59e0b">
+                <span id="val-color-fin" class="hex-value">#f59e0b</span>
+              </div>
+            </div>
+          </div>
+          <div class="input-field">
+            <div class="input-label-row">
+              <span>Headers Color</span>
+              <div class="color-picker-wrapper">
+                <input type="color" id="input-color-header" value="#2563eb">
+                <span id="val-color-header" class="hex-value">#2563eb</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Tube Specifications -->
+        <section class="control-group">
+          <h2>Tubes Configuration</h2>
+          <div class="input-field">
+            <div class="input-label-row">
+              <span>Tubes Per Panel</span>
+              <span id="val-tubes" class="input-value">54</span>
+            </div>
+            <input type="range" id="input-tubes" min="10" max="80" value="54">
+          </div>
+          <div class="input-field">
+            <div class="input-label-row">
+              <span>Tube OD (Outer Dia)</span>
+              <span id="val-tube-od" class="input-value">32 mm</span>
+            </div>
+            <input type="range" id="input-tube-od" min="20" max="60" value="32">
+          </div>
+          <div class="input-field">
+            <div class="input-label-row">
+              <span>Tube Thickness</span>
+              <span id="val-tube-thick" class="input-value">6.0 mm</span>
+            </div>
+            <input type="range" id="input-tube-thick" min="2" max="12" step="0.5" value="6">
+          </div>
+          <div class="input-field">
+            <div class="input-label-row">
+              <span>Pitch (Tube Center Distance)</span>
+              <span id="val-pitch" class="input-value">46 mm</span>
+            </div>
+            <input type="range" id="input-pitch" min="34" max="100" value="46">
+          </div>
+        </section>
+
+        <!-- Panel Visibility -->
+        <section class="control-group">
+          <h2>Panel Visibility</h2>
+          <div style="display:flex;gap:6px;margin-bottom:4px;">
+            <button id="btn-show-all-panels" style="flex:1;padding:6px 8px;font-size:0.72rem;">Show All</button>
+            <button id="btn-hide-all-panels" style="flex:1;padding:6px 8px;font-size:0.72rem;">Hide All</button>
+          </div>
+          <div class="panel-vis-grid">
+            <button class="panel-vis-btn pvis-pink active" data-panel="1" id="pvis-1">P1</button>
+            <button class="panel-vis-btn pvis-pink active" data-panel="2" id="pvis-2">P2</button>
+            <button class="panel-vis-btn pvis-pink active" data-panel="3" id="pvis-3">P3</button>
+            <button class="panel-vis-btn pvis-green active" data-panel="4" id="pvis-4">P4</button>
+            <button class="panel-vis-btn pvis-green active" data-panel="5" id="pvis-5">P5</button>
+            <button class="panel-vis-btn pvis-green active" data-panel="6" id="pvis-6">P6</button>
+            <button class="panel-vis-btn pvis-brown active" data-panel="7" id="pvis-7">P7</button>
+            <button class="panel-vis-btn pvis-brown active" data-panel="8" id="pvis-8">P8</button>
+            <button class="panel-vis-btn pvis-brown active" data-panel="9" id="pvis-9">P9</button>
+            <button class="panel-vis-btn pvis-brown active" data-panel="10" id="pvis-10">P10</button>
+            <button class="panel-vis-btn pvis-brown active" data-panel="11" id="pvis-11">P11</button>
+            <button class="panel-vis-btn pvis-brown active" data-panel="12" id="pvis-12">P12</button>
+            <button class="panel-vis-btn pvis-green active" data-panel="13" id="pvis-13">P13</button>
+            <button class="panel-vis-btn pvis-green active" data-panel="14" id="pvis-14">P14</button>
+            <button class="panel-vis-btn pvis-green active" data-panel="15" id="pvis-15">P15</button>
+            <button class="panel-vis-btn pvis-pink active" data-panel="16" id="pvis-16">P16</button>
+            <button class="panel-vis-btn pvis-pink active" data-panel="17" id="pvis-17">P17</button>
+            <button class="panel-vis-btn pvis-pink active" data-panel="18" id="pvis-18">P18</button>
+          </div>
+        </section>
+
+        <!-- Roof Panel Visibility -->
+        <section class="control-group">
+          <h2>Roof Panel Visibility</h2>
+          <div class="input-field" style="flex-direction:row;align-items:center;gap:10px;padding-bottom:6px;">
+            <label for="input-show-roof" style="flex:1;font-size:0.78rem;color:var(--text-muted);">Show Roof</label>
+            <input type="checkbox" id="input-show-roof" checked style="accent-color:#06b6d4;width:16px;height:16px;cursor:pointer;">
+          </div>
+          <div style="display:flex;gap:6px;margin-bottom:4px;">
+            <button id="btn-show-all-roof" style="flex:1;padding:6px 8px;font-size:0.72rem;">Show All</button>
+            <button id="btn-hide-all-roof" style="flex:1;padding:6px 8px;font-size:0.72rem;">Hide All</button>
+          </div>
+          <div class="panel-vis-grid">
+            <button class="panel-vis-btn pvis-cyan active" data-rpanel="1"  id="rvis-1">R1</button>
+            <button class="panel-vis-btn pvis-cyan active" data-rpanel="2"  id="rvis-2">R2</button>
+            <button class="panel-vis-btn pvis-cyan active" data-rpanel="3"  id="rvis-3">R3</button>
+            <button class="panel-vis-btn pvis-cyan active" data-rpanel="4"  id="rvis-4">R4</button>
+            <button class="panel-vis-btn pvis-cyan active" data-rpanel="5"  id="rvis-5">R5</button>
+            <button class="panel-vis-btn pvis-cyan active" data-rpanel="6"  id="rvis-6">R6</button>
+            <button class="panel-vis-btn pvis-cyan active" data-rpanel="7"  id="rvis-7">R7</button>
+            <button class="panel-vis-btn pvis-cyan active" data-rpanel="8"  id="rvis-8">R8</button>
+            <button class="panel-vis-btn pvis-cyan active" data-rpanel="9"  id="rvis-9">R9</button>
+            <button class="panel-vis-btn pvis-cyan active" data-rpanel="10" id="rvis-10">R10</button>
+            <button class="panel-vis-btn pvis-cyan active" data-rpanel="11" id="rvis-11">R11</button>
+            <button class="panel-vis-btn pvis-cyan active" data-rpanel="12" id="rvis-12">R12</button>
+            <button class="panel-vis-btn pvis-cyan active" data-rpanel="13" id="rvis-13">R13</button>
+            <button class="panel-vis-btn pvis-cyan active" data-rpanel="14" id="rvis-14">R14</button>
+            <button class="panel-vis-btn pvis-cyan active" data-rpanel="15" id="rvis-15">R15</button>
+            <button class="panel-vis-btn pvis-cyan active" data-rpanel="16" id="rvis-16">R16</button>
+            <button class="panel-vis-btn pvis-cyan active" data-rpanel="17" id="rvis-17">R17</button>
+            <button class="panel-vis-btn pvis-cyan active" data-rpanel="18" id="rvis-18">R18</button>
+          </div>
+        </section>
+
+        <section class="control-group">
+          <h2>Panel Dimensions</h2>
+          <div class="input-field">
+            <div class="input-label-row">
+              <span>Panel 4, 6, 13, 15 Length</span>
+              <span id="val-len-outer" class="input-value">12.0 m</span>
+            </div>
+            <input type="range" id="input-len-outer" min="5" max="20" step="0.5" value="12">
+          </div>
+          <div class="input-field">
+            <div class="input-label-row">
+              <span>Panel 5 &amp; 14 Length</span>
+              <span id="val-len-centre" class="input-value">10.0 m</span>
+            </div>
+            <input type="range" id="input-len-centre" min="8.0" max="11.8" step="0.1" value="10.0">
+          </div>
+          <div class="input-field">
+            <div class="input-label-row">
+              <span>Fin Thickness (Internal)</span>
+              <span id="val-fin-thick" class="input-value">6.0 mm</span>
+            </div>
+            <input type="range" id="input-fin-thick" min="2" max="15" step="0.5" value="6">
+          </div>
+          <div class="input-field">
+            <div class="input-label-row">
+              <span>Joining Fin Thickness</span>
+              <span id="val-join-thick" class="input-value">14.0 mm</span>
+            </div>
+            <input type="range" id="input-join-thick" min="4" max="25" step="0.5" value="14">
+          </div>
+        </section>
+
+        <!-- Header Specifications -->
+        <section class="control-group">
+          <h2>Headers &amp; Connections</h2>
+          <div class="input-field">
+            <div class="input-label-row">
+              <span>Header OD</span>
+              <span id="val-header-od" class="input-value">250 mm</span>
+            </div>
+            <input type="range" id="input-header-od" min="100" max="400" step="10" value="250">
+          </div>
+          <div class="input-field">
+            <div class="input-label-row">
+              <span>Header Shift (Z-axis offset)</span>
+              <span id="val-header-offset" class="input-value">400 mm</span>
+            </div>
+            <input type="range" id="input-header-offset" min="300" max="1000" step="50" value="400">
+          </div>
+          <div class="input-field">
+            <div class="input-label-row">
+              <span class="input-label-row" style="margin-bottom: 4px;">Centre Outlet Angle</span>
+              <div class="btn-grid">
+                <button id="btn-angle-45" class="active">45 Degrees</button>
+                <button id="btn-angle-90">90 Degrees</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- LTRH Zone Specifications -->
+        <section class="control-group">
+          <h2>LTRH Zone (Reheater)</h2>
+          <div class="input-field" style="flex-direction:row;align-items:center;gap:10px;padding-bottom:6px;">
+            <label for="input-show-ltrh" style="flex:1;font-size:0.78rem;color:var(--text-muted);">Show LTRH Zone</label>
+            <input type="checkbox" id="input-show-ltrh" checked style="accent-color:#a855f7;width:16px;height:16px;cursor:pointer;">
+          </div>
+          <div class="input-field">
+            <div class="input-label-row">
+              <span>LTRH Tube OD</span>
+              <span id="val-ltrh-od" class="input-value">50 mm</span>
+            </div>
+            <input type="range" id="input-ltrh-od" min="30" max="80" step="5" value="50">
+          </div>
+          <div class="input-field">
+            <div class="input-label-row">
+              <span>LTRH Pitch</span>
+              <span id="val-ltrh-pitch" class="input-value">100 mm</span>
+            </div>
+            <input type="range" id="input-ltrh-pitch" min="60" max="150" step="5" value="100">
+          </div>
+        </section>
+
+
+        <!-- Bill of Materials Dashboard -->
+        <section class="control-group">
+          <h2>Bill of Materials (BOM)</h2>
+          <div style="max-height: 260px; overflow-y: auto; margin-bottom: 8px; border: 1px solid rgba(255,255,255,0.05); border-radius: 4px; padding: 2px;">
+            <table class="bom-table" style="margin: 0; width: 100%;">
+              <thead>
+                <tr>
+                  <th style="padding: 6px 8px;">Component</th>
+                  <th style="padding: 6px 8px;">Qty / Specs</th>
+                  <th style="padding: 6px 8px;">Est. Mass</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Water Walls -->
+                <tr class="bom-section-hdr"><td colspan="3" style="background: rgba(255,255,255,0.05); font-weight: 600; font-size: 0.7rem; color: var(--accent-color); padding: 4px 8px;">Water Walls (Front &amp; Rear)</td></tr>
+                <tr>
+                  <td style="padding: 5px 8px;">Tubes</td>
+                  <td id="bom-ww-tubes-qty" style="padding: 5px 8px;">--</td>
+                  <td id="bom-ww-tubes-mass" style="padding: 5px 8px;">--</td>
+                </tr>
+                <tr>
+                  <td style="padding: 5px 8px;">Fins</td>
+                  <td id="bom-ww-fins-qty" style="padding: 5px 8px;">--</td>
+                  <td id="bom-ww-fins-mass" style="padding: 5px 8px;">--</td>
+                </tr>
+                <tr>
+                  <td style="padding: 5px 8px;">Headers</td>
+                  <td id="bom-ww-hdrs-qty" style="padding: 5px 8px;">--</td>
+                  <td id="bom-ww-hdrs-mass" style="padding: 5px 8px;">--</td>
+                </tr>
+                <!-- Roof Panel -->
+                <tr class="bom-section-hdr"><td colspan="3" style="background: rgba(255,255,255,0.05); font-weight: 600; font-size: 0.7rem; color: #06b6d4; padding: 4px 8px;">Roof Panel Assembly</td></tr>
+                <tr>
+                  <td style="padding: 5px 8px;">Tubes &amp; Fins</td>
+                  <td id="bom-roof-tubes-qty" style="padding: 5px 8px;">--</td>
+                  <td id="bom-roof-tubes-mass" style="padding: 5px 8px;">--</td>
+                </tr>
+                <tr>
+                  <td style="padding: 5px 8px;">Headers</td>
+                  <td id="bom-roof-hdrs-qty" style="padding: 5px 8px;">--</td>
+                  <td id="bom-roof-hdrs-mass" style="padding: 5px 8px;">--</td>
+                </tr>
+                <!-- LTRH Assembly -->
+                <tr class="bom-section-hdr"><td colspan="3" style="background: rgba(255,255,255,0.05); font-weight: 600; font-size: 0.7rem; color: #a855f7; padding: 4px 8px;">LTRH Zone (Reheater)</td></tr>
+                <tr>
+                  <td style="padding: 5px 8px;">Coils &amp; Hangers</td>
+                  <td id="bom-ltrh-tubes-qty" style="padding: 5px 8px;">--</td>
+                  <td id="bom-ltrh-tubes-mass" style="padding: 5px 8px;">--</td>
+                </tr>
+                <tr>
+                  <td style="padding: 5px 8px;">Headers</td>
+                  <td id="bom-ltrh-hdrs-qty" style="padding: 5px 8px;">--</td>
+                  <td id="bom-ltrh-hdrs-mass" style="padding: 5px 8px;">--</td>
+                </tr>
+                <!-- Summary -->
+                <tr style="border-top: 1px dashed rgba(255,255,255,0.15); font-weight: 700;">
+                  <td style="padding: 6px 8px;">Total Mass</td>
+                  <td style="padding: 6px 8px;">Carbon Steel</td>
+                  <td id="bom-total-mass" style="color: var(--accent-color); padding: 6px 8px;">-- kg</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p style="font-size: 0.65rem; color: var(--text-muted); text-align: right; margin: 0;">
+            *Calculated at &rho; = 7,850 kg/m&sup3; based on current model sizing.
+          </p>
+        </section>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Load Three.js library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <!-- Load OrbitControls -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <!-- Main Application Logic -->
+  <script src="app.js?v=20260620-2323"></script>
+  <script>
+    // Initialize icons
+    lucide.createIcons();
+  </script>
+</body>
+</html>

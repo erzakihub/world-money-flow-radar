@@ -1,0 +1,24 @@
+{
+  "name": "alphapulse-screener",
+  "version": "1.0.0",
+  "description": "AlphaPulse - Advanced Momentum Stock Screener & Live Watchlist Dashboard",
+  "main": "app.js",
+  "scripts": {
+    "start": "npx http-server -p 8080 ./",
+    "dev": "npx http-server -p 8080 ./"
+  },
+  "keywords": [
+    "stocks",
+    "screener",
+    "momentum",
+    "technical-analysis",
+    "minervini",
+    "watchlist",
+    "realtime"
+  ],
+  "author": "Antigravity",
+  "license": "ISC",
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}

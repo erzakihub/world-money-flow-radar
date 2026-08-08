@@ -1,0 +1,52 @@
+# Virtual environments
+backend/venv/
+venv/
+.venv/
+
+# Databases & local data caches
+backend/*.db
+backend/*.db-journal
+*.db
+backend/quant_intelligence.db
+backend/money_flow.db
+
+# Node dependencies & build directories
+node_modules/
+frontend/node_modules/
+frontend/dist/
+dist/
+
+# Scratch & temporary workspace files
+scratch/
+temp/
+tmp/
+*.step*
+*.restored
+*.early_restored
+*.early_step*
+longest_main_view.txt
+all_main_lines.txt
+draft_email_*.scpt
+generate_bulletin_*.py
+user_message_*.txt
+mock-pivision*.html
+global_money_flow_report.pdf
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDEs and editors
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.vercel

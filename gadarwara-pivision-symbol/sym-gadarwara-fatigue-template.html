@@ -1,0 +1,45 @@
+<div class="native-fatigue-container">
+    <div class="native-header">
+        <h3>Gadarwara TMT Fatigue Diagnostics</h3>
+    </div>
+    
+    <!-- Active Alerts -->
+    <div class="native-alerts" ng-repeat="a in alerts">
+        <div class="native-alert-box" ng-class="a.type">
+            <strong>{{a.title}}</strong>: {{a.desc}}
+        </div>
+    </div>
+
+    <!-- Gauge -->
+    <div class="native-gauge-container">
+        <div class="risk-val-display" ng-style="{'color': fatigueRisk >= 75 ? '#ff3333' : (fatigueRisk >= 40 ? '#ffa500' : '#238636')}">{{fatigueRisk}}%</div>
+        <div class="risk-label">Fatigue Damage Index</div>
+    </div>
+
+    <!-- 2D Furnace Cross-Section -->
+    <div class="native-furnace-container">
+        <div class="furnace-border f-front" ng-class="wallAves.front >= 450 ? 'crit' : 'norm'"></div>
+        <div class="furnace-border f-rear" ng-class="wallAves.rear >= 450 ? 'crit' : 'norm'"></div>
+        <div class="furnace-border f-left" ng-class="wallAves.left >= 450 ? 'crit' : 'norm'"></div>
+        <div class="furnace-border f-right" ng-class="wallAves.right >= 450 ? 'crit' : 'norm'"></div>
+        
+        <!-- Shifting fireball representing flame eccentricity -->
+        <div class="native-fireball" ng-style="{'left': fireball.x + '%', 'top': fireball.y + '%'}"></div>
+        
+        <!-- Text labels inside box -->
+        <span class="native-fl-label fl-f">FRONT</span>
+        <span class="native-fl-label fl-r">REAR</span>
+        <span class="native-fl-label fl-l">LEFT</span>
+        <span class="native-fl-label fl-ri">RIGHT</span>
+    </div>
+
+    <div class="native-stress-row">
+        <span>Adjacent Tube Fin Stress:</span>
+        <strong ng-class="stressMPa >= 150 ? 'crit' : (stressMPa >= 100 ? 'warn' : 'norm')">{{stressMPa}} MPa</strong>
+    </div>
+
+    <div class="native-stress-row" style="margin-top: 5px;">
+        <span>Peak Rate of Change (dT/dt):</span>
+        <strong ng-class="maxRoc >= 8 ? 'crit' : (maxRoc >= 5 ? 'warn' : 'norm')">{{maxRoc | number:1}} °C/min</strong>
+    </div>
+</div>

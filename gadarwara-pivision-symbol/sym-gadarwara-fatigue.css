@@ -1,0 +1,82 @@
+.native-fatigue-container {
+    background: #111b24;
+    color: #eee;
+    padding: 15px;
+    font-family: sans-serif;
+    border-radius: 6px;
+    border: 1px solid #28303d;
+}
+.native-header h3 {
+    margin: 0 0 10px 0;
+    color: #ff5e00;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.native-alert-box {
+    padding: 8px;
+    margin-bottom: 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 500;
+}
+.native-alert-box.critical { background: rgba(255,0,0,0.15); border: 1px solid red; color: #ff6666; }
+.native-alert-box.warning { background: rgba(255,165,0,0.15); border: 1px solid orange; color: #ffaa00; }
+
+.native-gauge-container {
+    text-align: center;
+    padding: 15px 0;
+}
+.risk-val-display { font-size: 32px; font-weight: bold; }
+.risk-label { font-size: 11px; color: #888; }
+
+.native-furnace-container {
+    position: relative;
+    width: 140px;
+    height: 140px;
+    border: 1px dashed #444;
+    margin: 15px auto;
+    background: #0d1117;
+    border-radius: 4px;
+}
+.furnace-border { position: absolute; }
+.f-front { top: 0; left: 0; right: 0; height: 4px; }
+.f-rear { bottom: 0; left: 0; right: 0; height: 4px; }
+.f-left { top: 0; bottom: 0; left: 0; width: 4px; }
+.f-right { top: 0; bottom: 0; right: 0; width: 4px; }
+
+.furnace-border.norm { background: #238636; }
+.furnace-border.crit { background: #ff3333; box-shadow: 0 0 8px #ff3333; }
+
+.native-fireball {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #fffb00 0%, #ff5900 65%, rgba(255,0,0,0) 100%);
+    filter: drop-shadow(0 0 6px #ff3c00);
+    transform: translate(-50%, -50%);
+    transition: left 0.5s, top 0.5s;
+}
+
+.native-fl-label {
+    position: absolute;
+    font-size: 7px;
+    color: rgba(255,255,255,0.25);
+    font-weight: bold;
+}
+.fl-f { top: 8px; left: 50%; transform: translateX(-50%); }
+.fl-r { bottom: 8px; left: 50%; transform: translateX(-50%); }
+.fl-l { left: 8px; top: 50%; transform: translateY(-50%) rotate(-90deg); }
+.fl-ri { right: 8px; top: 50%; transform: translateY(-50%) rotate(90deg); }
+
+.native-stress-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    padding-top: 6px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+.native-stress-row strong.crit { color: #ff3333; }
+.native-stress-row strong.warn { color: #ffa500; }
+.native-stress-row strong.norm { color: #58a6ff; }

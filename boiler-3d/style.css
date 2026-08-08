@@ -1,0 +1,698 @@
+/* 3D Boiler Panel Visualizer - Styling */
+
+:root {
+  --bg-gradient: linear-gradient(135deg, #090d16 0%, #111827 100%);
+  --panel-bg: rgba(17, 24, 39, 0.75);
+  --panel-border: rgba(255, 255, 255, 0.08);
+  --accent-color: #3b82f6;
+  --accent-glow: rgba(59, 130, 246, 0.3);
+  --text-primary: #f3f4f6;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+  
+  --tube-color: #10b981;
+  --fin-color: #f59e0b;
+  --header-color: #2563eb;
+  
+  --font-family: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-family);
+  background: #090d16;
+  color: var(--text-primary);
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+}
+
+#app-container {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+}
+
+/* 3D Canvas */
+#canvas-container {
+  flex: 1;
+  height: 100%;
+  position: relative;
+  background: var(--bg-gradient);
+}
+
+canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  cursor: grab;
+}
+
+/* Glassmorphism Sidebar */
+#sidebar {
+  width: 420px;
+  height: 100%;
+  background: var(--panel-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-left: 1px solid var(--panel-border);
+  display: flex;
+  flex-direction: column;
+  z-index: 10;
+  box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow-y: auto;
+}
+
+#sidebar.collapsed {
+  transform: translateX(420px);
+  position: absolute;
+  right: 0;
+}
+
+.sidebar-header {
+  padding: 24px;
+  border-bottom: 1px solid var(--panel-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sidebar-header h1 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  background: linear-gradient(to right, #60a5fa, #3b82f6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sidebar-header p {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+.sidebar-content {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  flex: 1;
+}
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.control-group h2 {
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  border-left: 3px solid var(--accent-color);
+  padding-left: 8px;
+}
+
+.input-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.input-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.input-value {
+  font-weight: 600;
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.05);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: monospace;
+}
+
+/* Custom Slider Styling */
+input[type="range"] {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--accent-color);
+  cursor: pointer;
+  box-shadow: 0 0 8px var(--accent-glow);
+  transition: transform 0.1s, background-color 0.1s;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.25);
+  background: #60a5fa;
+}
+
+/* Button Group */
+.btn-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.btn-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.btn-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+
+button {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--panel-border);
+  color: var(--text-primary);
+  padding: 10px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: var(--font-family);
+  font-size: 0.8rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+button.active {
+  background: var(--accent-color);
+  border-color: var(--accent-color);
+  box-shadow: 0 0 12px var(--accent-glow);
+}
+
+button.accent-btn {
+  background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+  border: none;
+}
+
+button.accent-btn:hover {
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+  transform: translateY(-1px);
+}
+
+/* Bill of Materials Table */
+.bom-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 8px;
+  font-size: 0.75rem;
+}
+
+.bom-table th, .bom-table td {
+  padding: 8px 10px;
+  text-align: left;
+  border-bottom: 1px solid var(--panel-border);
+}
+
+.bom-table th {
+  color: var(--text-secondary);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.65rem;
+}
+
+.bom-table td {
+  color: var(--text-primary);
+}
+
+.bom-table tr:last-child {
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.bom-table tr:last-child td {
+  border-bottom: none;
+  color: #60a5fa;
+}
+
+/* Floating UI Controls on Canvas */
+.floating-card {
+  position: absolute;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--panel-border);
+  border-radius: 12px;
+  padding: 14px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  z-index: 5;
+  pointer-events: auto;
+}
+
+#legend-card {
+  bottom: 24px;
+  left: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 160px;
+}
+
+.legend-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.75rem;
+}
+
+.legend-color {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+}
+
+.color-tube { background: var(--tube-color); }
+.color-tube-pink { background: #ec4899; }
+.color-tube-brown { background: #8b5a2b; }
+.color-fin { background: var(--fin-color); }
+.color-header { background: var(--header-color); }
+.color-ltrh { background: #a855f7; }
+
+#tooltip-card {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  min-width: 250px;
+  display: none;
+  pointer-events: none;
+  border-left: 3px solid var(--accent-color);
+}
+
+#tooltip-card h3 {
+  font-size: 0.85rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+  color: #60a5fa;
+}
+
+#tooltip-card p {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+#tooltip-card .spec-row {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding-top: 4px;
+}
+
+#view-controls {
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+}
+
+.control-separator {
+  width: 1px;
+  background: rgba(255, 255, 255, 0.15);
+  margin: 0 4px;
+  align-self: stretch;
+}
+
+#view-controls button * {
+  pointer-events: none;
+}
+
+/* Sidebar Toggle Button */
+#sidebar-toggle {
+  position: absolute;
+  right: 24px;
+  top: 24px;
+  z-index: 10;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--panel-bg);
+  backdrop-filter: blur(8px);
+}
+
+/* Quick Dimension Overlay toggle button */
+#dimensions-toggle {
+  position: absolute;
+  right: 80px;
+  top: 24px;
+  z-index: 10;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--panel-bg);
+  backdrop-filter: blur(8px);
+}
+
+/* Quick Screenshot Button (Transparent Clipart) */
+#btn-screenshot {
+  position: absolute;
+  right: 136px;
+  top: 24px;
+  z-index: 10;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--panel-bg);
+  backdrop-filter: blur(8px);
+}
+
+/* Interactive Measurement Ruler Button */
+#btn-interactive-ruler {
+  position: absolute;
+  right: 192px;
+  top: 24px;
+  z-index: 10;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--panel-bg);
+  backdrop-filter: blur(8px);
+}
+
+/* Camera Direction View Gizmo (Orientation Widget) */
+#orientation-gizmo {
+  position: absolute;
+  top: 80px;
+  right: 24px;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  z-index: 10;
+  pointer-events: auto;
+  cursor: pointer;
+  overflow: hidden;
+  transition: border-color 0.3s, background 0.3s;
+}
+
+#orientation-gizmo:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(15, 23, 42, 0.6);
+}
+
+/* Scrollbar styling for sidebar */
+#sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+
+#sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+#sidebar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+#sidebar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Loading Overlay */
+#loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #090d16;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  transition: opacity 0.5s ease-out;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 3px solid rgba(59, 130, 246, 0.1);
+  border-radius: 50%;
+  border-top-color: var(--accent-color);
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-text {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  letter-spacing: 0.05em;
+}
+
+/* Dimension Labels in 3D Space (CSS2DRenderer) */
+.dim-label {
+  color: #f3f4f6;
+  font-family: monospace;
+  font-size: 0.65rem;
+  font-weight: bold;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+  padding: 2px 6px;
+  pointer-events: none;
+  white-space: nowrap;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.dim-line {
+  border-top: 1px dashed rgba(255, 255, 255, 0.4);
+  height: 0;
+  pointer-events: none;
+}
+
+/* Color Customizer CSS */
+.color-picker-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--panel-border);
+}
+
+.color-picker-wrapper input[type="color"] {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.color-picker-wrapper input[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.color-picker-wrapper input[type="color"]::-webkit-color-swatch {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+}
+
+.hex-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+/* Custom Checkbox Styling for Rotate Model Option */
+.checkbox-field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-top: 10px;
+}
+
+.checkbox-field input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 1.5px solid var(--panel-border);
+  border-radius: 4px;
+  outline: none;
+  background: rgba(255, 255, 255, 0.05);
+  cursor: pointer;
+  position: relative;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.checkbox-field input[type="checkbox"]:checked {
+  background: var(--accent-color);
+  border-color: var(--accent-color);
+}
+
+.checkbox-field input[type="checkbox"]:checked::after {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 2px;
+  width: 4px;
+  height: 8px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.checkbox-field:hover input[type="checkbox"] {
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* ─── Panel Visibility Toggle Grid ─────────────────────────────── */
+.panel-vis-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 5px;
+}
+
+.panel-vis-btn {
+  padding: 5px 2px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  border-radius: 6px;
+  border: 1.5px solid transparent;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Visible (active) state – coloured border + tinted background */
+.panel-vis-btn.pvis-pink.active {
+  border-color: #ec4899;
+  background: rgba(236, 72, 153, 0.18);
+  color: #f9a8d4;
+  box-shadow: 0 0 6px rgba(236, 72, 153, 0.3);
+}
+.panel-vis-btn.pvis-green.active {
+  border-color: #10b981;
+  background: rgba(16, 185, 129, 0.15);
+  color: #6ee7b7;
+  box-shadow: 0 0 6px rgba(16, 185, 129, 0.3);
+}
+.panel-vis-btn.pvis-brown.active {
+  border-color: #8b5a2b;
+  background: rgba(139, 90, 43, 0.2);
+  color: #c8956a;
+  box-shadow: 0 0 6px rgba(139, 90, 43, 0.3);
+}
+.panel-vis-btn.pvis-cyan.active {
+  border-color: #06b6d4;
+  background: rgba(6, 182, 212, 0.15);
+  color: #67e8f9;
+  box-shadow: 0 0 6px rgba(6, 182, 212, 0.35);
+}
+
+/* Hidden (inactive) state – greyed out with strikethrough */
+.panel-vis-btn:not(.active) {
+  border-color: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.02);
+  color: rgba(255, 255, 255, 0.2);
+  box-shadow: none;
+  text-decoration: line-through;
+  text-decoration-color: rgba(255, 255, 255, 0.3);
+}
+
+.panel-vis-btn:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.2);
+}
+
+.panel-vis-btn:not(.active):hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.4);
+  text-decoration: none;
+}

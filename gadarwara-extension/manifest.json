@@ -1,0 +1,30 @@
+{
+  "manifest_version": 3,
+  "name": "NTPC Boiler Combustion Optimisation Advisor",
+  "version": "1.2",
+  "description": "Operator advisory for combustion balance, water-wall thermal exposure screening, and evidence-led optimisation on supported NTPC PI Vision displays.",
+  "permissions": [
+    "storage"
+  ],
+  "host_permissions": [
+    "https://pivision.ntpc.co.in/*",
+    "http://localhost:8080/*",
+    "http://localhost:8081/*",
+    "http://127.0.0.1:8080/*",
+    "http://127.0.0.1:8081/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://pivision.ntpc.co.in/PIVision/*",
+        "https://pivision.ntpc.co.in/pivision/*",
+        "http://localhost:8080/mock-pivision.html",
+        "http://localhost:8081/mock-pivision.html",
+        "http://127.0.0.1:8080/mock-pivision.html",
+        "http://127.0.0.1:8081/mock-pivision.html"
+      ],
+      "js": ["plant-config.js", "analytics-engine.js", "content.js"],
+      "css": ["styles.css"]
+    }
+  ]
+}
