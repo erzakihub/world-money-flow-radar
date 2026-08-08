@@ -115,7 +115,7 @@ export default function StrategyBuilder({ onRunBacktest }: StrategyBuilderProps)
     };
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/backtests/run", {
+      const response = await fetch("/api/backtests/run", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(config)

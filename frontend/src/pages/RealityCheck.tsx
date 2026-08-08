@@ -6,7 +6,7 @@ export default function RealityCheck() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/reality-check")
+    fetch("/api/reality-check")
       .then(res => res.json())
       .then(resData => {
         setData(resData);

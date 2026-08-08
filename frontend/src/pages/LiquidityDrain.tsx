@@ -20,7 +20,7 @@ export default function LiquidityDrain() {
   const fetchDrainData = async () => {
     setLoading(true);
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/liquidity-drain/global");
+      const response = await fetch("/api/liquidity-drain/global");
       const data = await response.json();
       setDrainData(data);
     } catch (e) {

@@ -8,7 +8,7 @@ export default function MarketBreadth() {
   const fetchBreadth = async () => {
     setLoading(true);
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/market/overview");
+      const response = await fetch("/api/market/overview");
       const resData = await response.json();
       setData(resData);
     } catch (e) {

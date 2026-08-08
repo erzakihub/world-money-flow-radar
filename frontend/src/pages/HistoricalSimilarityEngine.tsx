@@ -20,7 +20,7 @@ export default function HistoricalSimilarityEngine() {
     setLoading(true);
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/api/flow-pulse/similarity?asset_name=${encodeURIComponent(selectedAsset)}`
+        `/api/flow-pulse/similarity?asset_name=${encodeURIComponent(selectedAsset)}`
       );
       const data = await response.json();
       setSimilarityData(data || []);

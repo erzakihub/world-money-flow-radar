@@ -22,7 +22,7 @@ export default function MoneyFlowTransmissionMap() {
   const fetchMapData = async () => {
     setLoading(true);
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/transmission-map");
+      const response = await fetch("/api/transmission-map");
       const data = await response.json();
       setMapData(data);
     } catch (e) {

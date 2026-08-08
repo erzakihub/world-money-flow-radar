@@ -122,7 +122,7 @@ export default function Header({
         {/* Sync Indicator */}
         <div className="flex items-center gap-2 text-[10px] font-mono text-gray-400 bg-[#111420] border border-gray-800/60 px-3 py-1.5 rounded-lg shadow-sm">
           <Wifi className="w-3.5 h-3.5 text-emerald-400" />
-          <span className="text-gray-300 font-semibold">127.0.0.1:8000 Connected</span>
+          <span className="text-gray-300 font-semibold">Live Engine Connected</span>
         </div>
       </div>
     </header>

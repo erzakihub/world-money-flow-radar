@@ -40,7 +40,7 @@ export default function AssetBullRunRadar() {
   const fetchRankings = async () => {
     setLoading(true);
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/flow-pulse/assets");
+      const response = await fetch("/api/flow-pulse/assets");
       const data = await response.json();
       setRankings(data || []);
       
@@ -58,7 +58,7 @@ export default function AssetBullRunRadar() {
   const fetchAssetHistory = async (assetId: string) => {
     setHistoryLoading(true);
     try {
-      const response = await fetch(`http://127.0.0.1:8000/api/flow-pulse/asset/${assetId}`);
+      const response = await fetch(`/api/flow-pulse/asset/${assetId}`);
       const data = await response.json();
       setAssetHistory(data.history || []);
     } catch (e) {

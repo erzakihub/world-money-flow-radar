@@ -173,7 +173,7 @@ export default function BalanceOfPayments() {
   }, [filteredCAP, visibleCountries]);
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/balance-of-payments")
+    fetch("/api/balance-of-payments")
       .then(res => res.json())
       .then(resData => {
         setData(resData);

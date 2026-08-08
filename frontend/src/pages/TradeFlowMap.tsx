@@ -45,7 +45,7 @@ export default function TradeFlowMap() {
   const [pulseIndex, setPulseIndex] = useState(0);
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/trade-flows")
+    fetch("/api/trade-flows")
       .then(res => res.json())
       .then(resData => {
         setData(resData);

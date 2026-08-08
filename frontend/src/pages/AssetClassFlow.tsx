@@ -6,7 +6,7 @@ export default function AssetClassFlow() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/asset-flow")
+    fetch("/api/asset-flow")
       .then(res => res.json())
       .then(resData => {
         setData(resData);

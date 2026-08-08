@@ -11,7 +11,7 @@ export default function RrgEngine() {
 
   const fetchRrgData = () => {
     setLoading(true);
-    fetch(`http://127.0.0.1:8000/api/rrg?universe=${universe}`)
+    fetch(`/api/rrg?universe=${universe}`)
       .then(res => res.json())
       .then(resData => {
         setData(resData.data);

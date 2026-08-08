@@ -33,7 +33,7 @@ export default function LiquidityMap({ onWeightChange }: LiquidityMapProps) {
   const fetchLiquidityData = async (activeWeights = weights) => {
     setLoading(true);
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/liquidity-map", {
+      const response = await fetch("/api/liquidity-map", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(activeWeights)

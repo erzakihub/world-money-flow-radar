@@ -32,7 +32,7 @@ export default function ApexLeadPredictor() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const res = await fetch("http://127.0.0.1:8000/api/apex-predictor/all-assets");
+      const res = await fetch("/api/apex-predictor/all-assets");
       const result = await res.json();
       setData(result || {});
     } catch (e) {

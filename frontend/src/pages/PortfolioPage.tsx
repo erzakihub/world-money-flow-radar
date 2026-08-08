@@ -26,7 +26,7 @@ export default function PortfolioPage({ onSelectStock }: PortfolioPageProps) {
   const fetchPortfolios = async () => {
     setLoading(true);
     try {
-      const res = await fetch("http://127.0.0.1:8000/api/portfolios");
+      const res = await fetch("/api/portfolios");
       const data = await res.json();
       setPortfolios(data);
       if (data.length > 0) {
@@ -42,7 +42,7 @@ export default function PortfolioPage({ onSelectStock }: PortfolioPageProps) {
     setRiskLoading(true);
     setRiskData(null);
     try {
-      const res = await fetch(`http://127.0.0.1:8000/api/portfolios/${id}/risk`, {
+      const res = await fetch(`/api/portfolios/${id}/risk`, {
         method: "POST"
       });
       const data = await res.json();
@@ -83,7 +83,7 @@ export default function PortfolioPage({ onSelectStock }: PortfolioPageProps) {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await fetch("http://127.0.0.1:8000/api/portfolios", {
+      const res = await fetch("/api/portfolios", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

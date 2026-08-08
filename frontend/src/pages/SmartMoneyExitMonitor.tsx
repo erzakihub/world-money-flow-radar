@@ -9,7 +9,7 @@ export default function SmartMoneyExitMonitor() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:8000/api/flow-pulse/smart-money");
+        const response = await fetch("/api/flow-pulse/smart-money");
         const resData = await response.json();
         setData(resData || {});
       } catch (e) {

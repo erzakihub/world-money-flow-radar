@@ -35,7 +35,7 @@ export default function Settings() {
       formData.append("file", file);
       formData.append("source_type", sourceType);
 
-      const res = await fetch("http://127.0.0.1:8000/api/upload", {
+      const res = await fetch("/api/upload", {
         method: "POST",
         body: formData
       });

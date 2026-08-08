@@ -29,7 +29,7 @@ export default function SingleStockResearch({ selectedSymbol }: SingleStockResea
     setError("");
     try {
       // 1. Fetch Profile
-      const profRes = await fetch(`http://127.0.0.1:8000/api/stocks/${targetSymbol}`);
+      const profRes = await fetch(`/api/stocks/${targetSymbol}`);
       if (!profRes.ok) {
         throw new Error("Stock listing not found");
       }
@@ -37,12 +37,12 @@ export default function SingleStockResearch({ selectedSymbol }: SingleStockResea
       setProfile(profData);
 
       // 2. Fetch Prices
-      const priceRes = await fetch(`http://127.0.0.1:8000/api/stocks/${targetSymbol}/prices`);
+      const priceRes = await fetch(`/api/stocks/${targetSymbol}/prices`);
       const priceData = await priceRes.json();
       setPrices(priceData);
 
       // 3. Fetch Financials
-      const finRes = await fetch(`http://127.0.0.1:8000/api/stocks/${targetSymbol}/financials`);
+      const finRes = await fetch(`/api/stocks/${targetSymbol}/financials`);
       const finData = await finRes.json();
       setFinancials(finData);
     } catch (e: any) {

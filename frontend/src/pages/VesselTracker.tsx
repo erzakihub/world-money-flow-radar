@@ -60,7 +60,7 @@ export default function VesselTracker() {
   const animationIntervalRef = useRef<any>(null);
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/vessel-tracker")
+    fetch("/api/vessel-tracker")
       .then(res => res.json())
       .then(resData => {
         setData(resData);

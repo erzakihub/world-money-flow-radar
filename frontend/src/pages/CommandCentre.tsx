@@ -33,10 +33,10 @@ export default function CommandCentre() {
     setLoading(true);
     try {
       const [signsRes, dbRes, assetsRes, drainRes] = await Promise.all([
-        fetch("http://127.0.0.1:8000/api/money-flow-signs").then(r => r.json()),
-        fetch("http://127.0.0.1:8000/api/dashboard/command-centre").then(r => r.json()),
-        fetch("http://127.0.0.1:8000/api/flow-pulse/assets").then(r => r.json()),
-        fetch("http://127.0.0.1:8000/api/liquidity-drain/global").then(r => r.json())
+        fetch("/api/money-flow-signs").then(r => r.json()),
+        fetch("/api/dashboard/command-centre").then(r => r.json()),
+        fetch("/api/flow-pulse/assets").then(r => r.json()),
+        fetch("/api/liquidity-drain/global").then(r => r.json())
       ]);
       
       setSigns(signsRes || []);

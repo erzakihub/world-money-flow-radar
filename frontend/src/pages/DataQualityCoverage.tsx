@@ -22,7 +22,7 @@ export default function DataQualityCoverage() {
 
   const fetchCoverage = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/data-quality/coverage");
+      const response = await fetch("/api/data-quality/coverage");
       const coverageData = await response.json();
       setData(coverageData || {});
     } catch (e) {
@@ -39,7 +39,7 @@ export default function DataQualityCoverage() {
     setAuditing(true);
     setAuditData(null);
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/data-quality/integrity-check");
+      const response = await fetch("/api/data-quality/integrity-check");
       const result = await response.json();
       // Add a slight delay to simulate cryptographic hash compute & verify
       setTimeout(() => {

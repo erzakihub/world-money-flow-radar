@@ -40,7 +40,7 @@ export default function BullPocketRadar() {
   const fetchRankings = async () => {
     setLoading(true);
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/bull-pocket/rankings");
+      const response = await fetch("/api/bull-pocket/rankings");
       const data = await response.json();
       setRankings(data.rankings || []);
     } catch (e) {
@@ -52,7 +52,7 @@ export default function BullPocketRadar() {
   const fetchAssetHistory = async (assetId: string) => {
     setHistoryLoading(true);
     try {
-      const response = await fetch(`http://127.0.0.1:8000/api/bull-pocket/asset/${assetId}`);
+      const response = await fetch(`/api/bull-pocket/asset/${assetId}`);
       const data = await response.json();
       setAssetHistory(data.history || []);
     } catch (e) {

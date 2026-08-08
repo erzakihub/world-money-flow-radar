@@ -9,7 +9,7 @@ export default function LiquidityTransmissionLab() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:8000/api/flow-pulse/transmission-lab");
+        const response = await fetch("/api/flow-pulse/transmission-lab");
         const resData = await response.json();
         setData(resData || {});
       } catch (e) {

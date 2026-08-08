@@ -32,8 +32,8 @@ export default function IndiaMoneyFlow() {
 
   useEffect(() => {
     Promise.all([
-      fetch("http://127.0.0.1:8000/api/india-flow").then(res => res.json()),
-      fetch("http://127.0.0.1:8000/api/india/sector-flow").then(res => res.json())
+      fetch("/api/india-flow").then(res => res.json()),
+      fetch("/api/india/sector-flow").then(res => res.json())
     ])
       .then(([fData, sData]) => {
         setFlowData(fData);

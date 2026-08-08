@@ -8,7 +8,7 @@ export default function DataQuality() {
   const fetchStatus = async () => {
     setLoading(true);
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/data-quality/status");
+      const response = await fetch("/api/data-quality/status");
       const resData = await response.json();
       setData(resData);
     } catch (e) {

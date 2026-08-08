@@ -33,7 +33,7 @@ export default function Backtesting() {
       formData.append("transaction_cost", tc.toString());
       formData.append("slippage", slip.toString());
 
-      const res = await fetch("http://127.0.0.1:8000/api/backtest", {
+      const res = await fetch("/api/backtest", {
         method: "POST",
         body: formData
       });

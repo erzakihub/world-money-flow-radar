@@ -65,7 +65,7 @@ export default function BullSignalValidationLab() {
   const runValidation = async () => {
     setLoading(true);
     try {
-      const url = `http://127.0.0.1:8000/api/backtest/bull-signals?signal_name=${encodeURIComponent(signal)}&asset_name=${encodeURIComponent(asset)}&forward_window=${window}`;
+      const url = `/api/backtest/bull-signals?signal_name=${encodeURIComponent(signal)}&asset_name=${encodeURIComponent(asset)}&forward_window=${window}`;
       const response = await fetch(url);
       const resData = await response.json();
       setData(resData);

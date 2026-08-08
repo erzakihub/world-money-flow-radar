@@ -18,7 +18,7 @@ export default function GlobalCentralBanks() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/central-banks")
+    fetch("/api/central-banks")
       .then((res) => res.json())
       .then((resData) => {
         setData(resData);

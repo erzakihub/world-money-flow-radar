@@ -40,7 +40,7 @@ export default function GlobalFlowBoard() {
     setExpandedAsset(assetName);
     setHistoryLoading(true);
     try {
-      const res = await fetch(`http://127.0.0.1:8000/api/backtest/asset-signal-history?asset_name=${encodeURIComponent(assetName)}&signal_type=${signalType}`);
+      const res = await fetch(`/api/backtest/asset-signal-history?asset_name=${encodeURIComponent(assetName)}&signal_type=${signalType}`);
       const data = await res.json();
       setHistoryData(data);
     } catch (e) {
@@ -52,7 +52,7 @@ export default function GlobalFlowBoard() {
   const fetchBoardData = async () => {
     setLoading(true);
     try {
-      const res = await fetch("http://127.0.0.1:8000/api/flow-pulse/global-board");
+      const res = await fetch("/api/flow-pulse/global-board");
       const data = await res.json();
       setBoardData(data || {});
     } catch (e) {

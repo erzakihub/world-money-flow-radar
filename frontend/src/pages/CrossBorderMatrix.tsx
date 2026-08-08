@@ -32,8 +32,8 @@ export default function CrossBorderMatrix() {
 
   useEffect(() => {
     Promise.all([
-      fetch("http://127.0.0.1:8000/api/cross-border").then((res) => res.json()),
-      fetch("http://127.0.0.1:8000/api/flows/surplus-matrix").then((res) => res.json())
+      fetch("/api/cross-border").then((res) => res.json()),
+      fetch("/api/flows/surplus-matrix").then((res) => res.json())
     ])
       .then(([cbData, mData]) => {
         setData(cbData);

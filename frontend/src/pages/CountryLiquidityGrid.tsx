@@ -20,7 +20,7 @@ export default function CountryLiquidityGrid() {
 
   const fetchCountries = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/flow-pulse/countries");
+      const response = await fetch("/api/flow-pulse/countries");
       const data = await response.json();
       setCountries(data || []);
     } catch (e) {

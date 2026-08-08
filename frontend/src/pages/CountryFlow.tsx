@@ -34,7 +34,7 @@ export default function CountryFlow() {
   const fetchCountries = async () => {
     setLoading(true);
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/flow-pulse/countries");
+      const response = await fetch("/api/flow-pulse/countries");
       const data = await response.json();
       setCountries(data || []);
       
@@ -51,7 +51,7 @@ export default function CountryFlow() {
   const fetchCountryHistory = async (countryId: string) => {
     setHistoryLoading(true);
     try {
-      const response = await fetch(`http://127.0.0.1:8000/api/flow-pulse/country/${countryId}`);
+      const response = await fetch(`/api/flow-pulse/country/${countryId}`);
       const data = await response.json();
       setCountryHistory(data.history || []);
     } catch (e) {

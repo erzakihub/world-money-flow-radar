@@ -30,7 +30,7 @@ export default function ReserveFlowTracker() {
   const [expectedUsdjpyYear, setExpectedUsdjpyYear] = useState<number>(155.0); // Target exchange rate
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/reserve-flows")
+    fetch("/api/reserve-flows")
       .then((res) => res.json())
       .then((resData) => {
         setData(resData);

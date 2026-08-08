@@ -30,7 +30,7 @@ export default function EventImpactTimeline() {
   const fetchTape = async () => {
     setLoading(true);
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/events/macro-flow-tape");
+      const response = await fetch("/api/events/macro-flow-tape");
       const data = await response.json();
       setTape(data.tape || []);
       if (data.tape && data.tape.length > 0) {

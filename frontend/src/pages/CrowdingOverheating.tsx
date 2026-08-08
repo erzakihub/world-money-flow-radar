@@ -6,7 +6,7 @@ export default function CrowdingOverheating() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/overheating")
+    fetch("/api/overheating")
       .then(res => res.json())
       .then(resData => {
         setData(resData);

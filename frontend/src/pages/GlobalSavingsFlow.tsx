@@ -20,7 +20,7 @@ export default function GlobalSavingsFlow() {
   const fetchSankey = async () => {
     setLoading(true);
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/flows/sankey");
+      const response = await fetch("/api/flows/sankey");
       const resData = await response.json();
       setData(resData);
     } catch (e) {

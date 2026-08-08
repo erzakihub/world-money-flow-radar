@@ -15,7 +15,7 @@ export default function StockUniverse({ onSelectStock }: StockUniverseProps) {
   const fetchStocks = async () => {
     setLoading(true);
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/stocks");
+      const response = await fetch("/api/stocks");
       const data = await response.json();
       setStocks(data);
     } catch (e) {

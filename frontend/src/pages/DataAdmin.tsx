@@ -10,7 +10,7 @@ export default function DataAdmin() {
   const fetchHealth = async () => {
     setLoading(true);
     try {
-      const res = await fetch("http://127.0.0.1:8000/api/admin/data-health");
+      const res = await fetch("/api/admin/data-health");
       const data = await res.json();
       setHealth(data);
     } catch (e) {
@@ -27,7 +27,7 @@ export default function DataAdmin() {
     setBtnLoading(true);
     setMessage("");
     try {
-      const res = await fetch("http://127.0.0.1:8000/api/admin/rebuild-factors", {
+      const res = await fetch("/api/admin/rebuild-factors", {
         method: "POST"
       });
       const data = await res.json();
@@ -44,7 +44,7 @@ export default function DataAdmin() {
     setBtnLoading(true);
     setMessage("");
     try {
-      const res = await fetch("http://127.0.0.1:8000/api/admin/update-data", {
+      const res = await fetch("/api/admin/update-data", {
         method: "POST"
       });
       const data = await res.json();

@@ -27,8 +27,8 @@ export default function Dashboard() {
     setLoading(true);
     try {
       const [resOverview, resRegime] = await Promise.all([
-        fetch("http://127.0.0.1:8000/api/market/overview"),
-        fetch("http://127.0.0.1:8000/api/market/regime")
+        fetch("/api/market/overview"),
+        fetch("/api/market/regime")
       ]);
       const resData = await resOverview.json();
       const regData = await resRegime.json();

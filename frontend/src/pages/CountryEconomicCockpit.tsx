@@ -51,7 +51,7 @@ export default function CountryEconomicCockpit() {
   const fetchCockpitData = async (countryCode: string) => {
     setLoading(true);
     try {
-      const res = await fetch(`http://127.0.0.1:8000/api/country-economic-cockpit/detail/${countryCode}?_t=${Date.now()}`);
+      const res = await fetch(`/api/country-economic-cockpit/detail/${countryCode}?_t=${Date.now()}`);
       const payload = await res.json();
       setData(payload);
     } catch (err) {
@@ -65,7 +65,7 @@ export default function CountryEconomicCockpit() {
     setActiveTrend({ indicator, label, currentVal });
     setSelectedFrequency(freq);
     try {
-      const res = await fetch(`http://127.0.0.1:8000/api/country-economic-cockpit/history-30y?country_id=${selectedCountry}&indicator=${indicator}&frequency=${freq}&_t=${Date.now()}`);
+      const res = await fetch(`/api/country-economic-cockpit/history-30y?country_id=${selectedCountry}&indicator=${indicator}&frequency=${freq}&_t=${Date.now()}`);
       const payload = await res.json();
       setTrendHistory(payload.history || []);
       setIsTrendPercentage(payload.is_percentage ?? true);

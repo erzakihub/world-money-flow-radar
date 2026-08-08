@@ -57,7 +57,7 @@ export default function BacktestValidationLab() {
     setLoading(true);
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/api/backtest/validation-lab?signal_name=${encodeURIComponent(selectedSignal)}&asset_name=${encodeURIComponent(selectedAsset)}&forward_window=${selectedHorizon}`
+        `/api/backtest/validation-lab?signal_name=${encodeURIComponent(selectedSignal)}&asset_name=${encodeURIComponent(selectedAsset)}&forward_window=${selectedHorizon}`
       );
       const data = await response.json();
       setResults(data || {});
