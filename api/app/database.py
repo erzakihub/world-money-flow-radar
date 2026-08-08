@@ -1,21 +1,14 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-import os
-
 import tempfile
 import os
 
 db_filename = "quant_intelligence.db"
-# Check if running on Vercel/serverless or if current directory is read-only
-is_serverless = os.getenv("VERCEL") or os.getenv("VERCEL_ENV") or not os.access(".", os.W_OK)
-if is_serverless:
-    db_path = os.path.join(tempfile.gettempdir(), db_filename)
-    DATABASE_URL = f"sqlite:///{db_path}"
-else:
-    DATABASE_URL = os.getenv("DATABASE_URL", f"sqlite:///./{db_filename}")
+# Always use /tmp in serverless / lambda / read-only or fallback to temp directory
+db_path = os.path.join(tempfile.gettempdir(), db_filename)
+DATABASE_URL = os.getenv("DATABASE_URL", f"sqlite:///{db_path}")
 
-# For SQLite, connect_args is needed, but not for PostgreSQL
 is_sqlite = DATABASE_URL.startswith("sqlite")
 connect_args = {"check_same_thread": False} if is_sqlite else {}
 
@@ -45,8 +38,11 @@ def get_db():
             print("DB init note:", e)
         _db_initialized = True
 
-    db = SessionLocal()
     try:
-        yield db
-    finally:
-        db.close()
+        db = SessionLocal()
+        try:
+            yield db
+        finally:
+            db.close()
+    except Exception:
+        yield None
