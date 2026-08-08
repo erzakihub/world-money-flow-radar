@@ -1,0 +1,15 @@
+# Exclude the backend development server directory — the api/ directory is the serverless entry point
+backend/
+backend/venv/
+
+# Virtual environments
+venv/
+.venv/
+
+# Database files
+*.db
+*.db-journal
+
+# Scratch and temporary files
+scratch/
+.gemini/
