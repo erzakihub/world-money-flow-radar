@@ -15,6 +15,7 @@ const MarketBreadth = lazy(() => import("./pages/MarketBreadth"));
 const DataAdmin = lazy(() => import("./pages/DataAdmin"));
 
 // Macro Radar Pages
+const CommandCentre = lazy(() => import("./pages/CommandCentre"));
 const GlobalFlowBoard = lazy(() => import("./pages/GlobalFlowBoard"));
 const ApexLeadPredictor = lazy(() => import("./pages/ApexLeadPredictor"));
 const CountryLiquidityGrid = lazy(() => import("./pages/CountryLiquidityGrid"));
@@ -33,7 +34,7 @@ const GlobalCentralBanks = lazy(() => import("./pages/GlobalCentralBanks"));
 const ReserveFlowTracker = lazy(() => import("./pages/ReserveFlowTracker"));
 
 export default function App() {
-  const [activePage, setActivePage] = useState("dashboard");
+  const [activePage, setActivePage] = useState("command-centre");
   const [backtestConfig, setBacktestConfig] = useState<any>(null);
   const [backtestResultData, setBacktestResultData] = useState<any>(null);
 
@@ -52,38 +53,18 @@ export default function App() {
       <Suspense fallback={
         <div className="flex flex-col items-center justify-center h-[500px] gap-3">
           <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-emerald-400"></div>
-          <span className="text-xs font-mono text-gray-500">Loading Quant Radar Module...</span>
+          <span className="text-xs font-mono text-gray-500">Loading World Money Flow Radar...</span>
         </div>
       }>
         {(() => {
           switch (activePage) {
-            // Quant Terminal Views
-            case "dashboard":
-              return <Dashboard />;
-            case "stock-universe":
-              return <StockUniverse onSelectStock={() => {}} />;
-            case "screener":
-              return <Screener onSelectStock={() => {}} />;
-            case "strategy-builder":
-              return <StrategyBuilder onRunBacktest={handleRunBacktest} />;
-            case "strategy-library":
-              return <StrategyLibrary onLoadTemplate={handleLoadTemplate} />;
-            case "backtest-results":
-              return <BacktestResults result={backtestResultData} />;
-            case "stock-research":
-              return <SingleStockResearch selectedSymbol="RELIANCE" />;
-            case "portfolio":
-              return <PortfolioPage onSelectStock={() => {}} />;
-            case "market-breadth":
-              return <MarketBreadth />;
-            case "data-admin":
-              return <DataAdmin />;
-
-            // Macro Views
-            case "apex-predictor":
-              return <ApexLeadPredictor />;
+            // World Money Flow Radar Views
+            case "command-centre":
+              return <CommandCentre />;
             case "global-flow-board":
               return <GlobalFlowBoard />;
+            case "apex-predictor":
+              return <ApexLeadPredictor />;
             case "country-liquidity":
               return <CountryLiquidityGrid />;
             case "balance-of-payments":
@@ -112,8 +93,31 @@ export default function App() {
               return <HistoricalSimilarityEngine />;
             case "data-quality-coverage":
               return <DataQualityCoverage />;
-            default:
+
+            // Equity Quant Modules
+            case "dashboard":
               return <Dashboard />;
+            case "stock-universe":
+              return <StockUniverse onSelectStock={() => {}} />;
+            case "screener":
+              return <Screener onSelectStock={() => {}} />;
+            case "strategy-builder":
+              return <StrategyBuilder onRunBacktest={handleRunBacktest} />;
+            case "strategy-library":
+              return <StrategyLibrary onLoadTemplate={handleLoadTemplate} />;
+            case "backtest-results":
+              return <BacktestResults result={backtestResultData} />;
+            case "stock-research":
+              return <SingleStockResearch selectedSymbol="RELIANCE" />;
+            case "portfolio":
+              return <PortfolioPage onSelectStock={() => {}} />;
+            case "market-breadth":
+              return <MarketBreadth />;
+            case "data-admin":
+              return <DataAdmin />;
+
+            default:
+              return <CommandCentre />;
           }
         })()}
       </Suspense>

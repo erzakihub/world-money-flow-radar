@@ -72,10 +72,10 @@ export default function Header({
         return "Backtest Validation Lab";
       case "historical-similarity":
         return "Historical Similarity Engine";
-      case "data-quality-coverage":
-        return "Data Feed Health & Quality";
+      case "command-centre":
+        return "World Money Flow Command Centre";
       default:
-        return "Indian Equity Quant Terminal";
+        return "World Money Flow Radar";
     }
   };
 
