@@ -1966,8 +1966,8 @@ def run_backtest_endpoint(config: dict, db: Session = Depends(get_db)):
     start_str = config.get("start_date", "2006-01-01")
     end_str = config.get("end_date", "2026-06-30")
     
-    start_dt = datetime.datetime.strptime(start_str, "%Y-%m-%d").date()
-    end_dt = datetime.datetime.strptime(end_str, "%Y-%m-%d").date()
+    start_dt = datetime.strptime(start_str, "%Y-%m-%d").date()
+    end_dt = datetime.strptime(end_str, "%Y-%m-%d").date()
     
     res = run_strategy_backtest(db, config, start_dt, end_dt)
     return res
@@ -2031,7 +2031,7 @@ def get_data_health(db: Session = Depends(get_db)):
 def rebuild_factors_endpoint(db: Session = Depends(get_db)):
     cursor = db.connection().connection.cursor()
     cursor.execute("SELECT DISTINCT date FROM adjusted_prices ORDER BY date ASC")
-    dates = [datetime.datetime.strptime(row[0], "%Y-%m-%d").date() for row in cursor.fetchall()]
+    dates = [datetime.strptime(row[0], "%Y-%m-%d").date() for row in cursor.fetchall()]
     for dt in dates:
         rebuild_factors_for_date(db, dt)
     return {"status": "success", "message": f"Factors rebuilt for {len(dates)} dates"}
