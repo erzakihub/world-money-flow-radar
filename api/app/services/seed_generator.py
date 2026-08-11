@@ -323,7 +323,7 @@ def generate_mock_data(db: Session):
             turnover_val = round((price * vol_val) / 100000.0, 2) # in ₹ Lakhs
 
             # Create price records
-            dp = DailyPrice(
+            daily_prices_batch.append(DailyPrice(
                 stock_id=stock.id,
                 date=dt,
                 open=raw_open,
@@ -335,10 +335,9 @@ def generate_mock_data(db: Session):
                 delivery_pct=del_pct,
                 turnover=turnover_val,
                 vwap=round((raw_open + raw_high + raw_low + price) / 4.0, 2)
-            )
-            db.add(dp)
+            ))
 
-            ap = AdjustedPrice(
+            adj_prices_batch.append(AdjustedPrice(
                 stock_id=stock.id,
                 date=dt,
                 open=adj_open,
@@ -348,8 +347,7 @@ def generate_mock_data(db: Session):
                 volume=float(vol_val * (1.0 / cum_factor)),
                 vwap=round((adj_open + adj_high + adj_low + adj_close) / 4.0, 2),
                 adjustment_factor=cum_factor
-            )
-            db.add(ap)
+            ))
 
             # Ratios daily (PE, PB, EV/Sales, FCF yield)
             # Find the latest available financial statement based on point-in-time
@@ -388,7 +386,7 @@ def generate_mock_data(db: Session):
                 fcf_yield_val = round((active_annual.free_cash_flow / mcap_dt) * 100.0, 2) if mcap_dt > 0 else None
                 dividend_yield_val = round((active_annual.dividend_paid / mcap_dt) * 100.0, 2) if mcap_dt > 0 else None
 
-            rd = RatiosDaily(
+            ratios_daily_batch.append(RatiosDaily(
                 stock_id=stock.id,
                 date=dt,
                 pe=pe_val,
@@ -400,8 +398,7 @@ def generate_mock_data(db: Session):
                 price_fcf=round(price / (active_annual.free_cash_flow / 10.0), 2) if active_annual and active_annual.free_cash_flow and active_annual.free_cash_flow > 0 else None,
                 dividend_yield=dividend_yield_val,
                 fcf_yield=fcf_yield_val
-            )
-            db.add(rd)
+            ))
 
             # Compute Quarterly Ratios (ROE, ROCE, Debt/Equity, Margins)
             roce_base = 24.0 if stock.symbol in ["TCS", "INFY", "HDFCBANK", "RELIANCE"] else 14.0
@@ -410,7 +407,7 @@ def generate_mock_data(db: Session):
             debt_eq_val = round(random.uniform(0.1, 0.4) if not stock.is_sme else random.uniform(0.3, 0.8), 2)
             ebitda_margin_val = round(ebitda_margin * 100.0, 2)
 
-            rq = RatiosQuarterly(
+            ratios_quarterly_batch.append(RatiosQuarterly(
                 stock_id=stock.id,
                 date=dt,
                 roe=roe_val,
@@ -425,8 +422,7 @@ def generate_mock_data(db: Session):
                 sales_cagr_3y=round(cagr_sales * 100.0, 2), # proxy
                 pat_cagr_3y=round(cagr_sales * 100.0 * 1.1, 2), # proxy
                 working_capital=round(inventory_yr + receivables_yr - payables_yr, 2)
-            )
-            db.add(rq)
+            ))
 
             # Factor scores (Quality, Growth, Value, Momentum, Risk, Ownership, Governance, Composite)
             # Make momentum fluctuate dynamically based on random walk return,
@@ -457,7 +453,7 @@ def generate_mock_data(db: Session):
                 0.10 * risk_score, 2
             )
 
-            fs = FactorScores(
+            factor_scores_batch.append(FactorScores(
                 stock_id=stock.id,
                 date=dt,
                 quality=qual_score,
@@ -468,8 +464,13 @@ def generate_mock_data(db: Session):
                 ownership=own_score,
                 governance=gov_score,
                 composite=comp_score
-            )
-            db.add(fs)
+            ))
+
+        db.bulk_save_objects(daily_prices_batch)
+        db.bulk_save_objects(adj_prices_batch)
+        db.bulk_save_objects(ratios_daily_batch)
+        db.bulk_save_objects(ratios_quarterly_batch)
+        db.bulk_save_objects(factor_scores_batch)
 
         db.commit()
         print(f"Generated complete point-in-time data for {stock.symbol}.")
