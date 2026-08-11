@@ -564,39 +564,52 @@ def run_strategy_backtest(db: Session, strategy_config: dict, start_date: dateti
     min_rolling_3y = round(float(np.min(rolling_3y_list)), 2) if rolling_3y_list else None
     max_rolling_3y = round(float(np.max(rolling_3y_list)), 2) if rolling_3y_list else None
 
-    metrics = {
-        "cagr": round(cagr * 100.0, 2),
-        "sharpe": round(sharpe, 2),
-        "max_drawdown": round(max_dd * 100.0, 2),
-        "calmar": round(calmar, 2),
-        "final_value": round(portfolio_value, 2),
+    def sanitize_val(obj):
+        if isinstance(obj, dict):
+            return {str(k): sanitize_val(v) for k, v in obj.items()}
+        elif isinstance(obj, list):
+            return [sanitize_val(v) for v in obj]
+        elif isinstance(obj, (np.floating, np.number)):
+            val = float(obj)
+            return 0.0 if (np.isnan(val) or np.isinf(val)) else val
+        elif isinstance(obj, float) and (np.isnan(obj) or np.isinf(obj)):
+            return 0.0
+        return obj
+
+    raw_metrics = {
+        "cagr": round(float(cagr * 100.0), 2),
+        "sharpe": round(float(sharpe), 2),
+        "max_drawdown": round(float(max_dd * 100.0), 2),
+        "calmar": round(float(calmar), 2),
+        "final_value": round(float(portfolio_value), 2),
         "total_trades": len(trade_log),
         "monthly_matrix": monthly_matrix,
         "yearly_returns": yearly_returns,
-        "win_rate": win_rate,
-        "profit_factor": profit_factor,
+        "win_rate": float(win_rate),
+        "profit_factor": float(profit_factor),
         "avg_rolling_3y": avg_rolling_3y,
         "min_rolling_3y": min_rolling_3y,
         "max_rolling_3y": max_rolling_3y
     }
+    metrics = sanitize_val(raw_metrics)
 
     # Save to database
     run_log = BacktestRun(
         strategy_name=strategy_config.get("name", "Quality Growth Momentum"),
         parameters_json=strategy_config,
         metrics_json=metrics,
-        trade_log_json=trade_log,
-        holdings_log_json=[{"symbol": stock_map[sid].symbol, "qty": h["qty"]} for sid, h in holdings.items() if sid in stock_map]
+        trade_log_json=sanitize_val(trade_log),
+        holdings_log_json=[{"symbol": stock_map[sid].symbol, "qty": float(h["qty"])} for sid, h in holdings.items() if sid in stock_map]
     )
     db.add(run_log)
     db.commit()
 
-    return {
+    return sanitize_val({
         "id": run_log.id,
         "metrics": metrics,
         "trade_log": trade_log,
         "equity_curve": daily_equity_curve,
         "rebalance_dates": rebalance_dates_log
-    }
+    })
 
 import random # for benchmark noise
