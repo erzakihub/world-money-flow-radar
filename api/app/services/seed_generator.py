@@ -51,7 +51,7 @@ def generate_mock_data(db: Session):
 
     # Dates Range (20 years: 2006 to 2026)
     start_date = datetime.date(2006, 1, 1)
-    end_date = datetime.date(2026, 6, 30)
+    end_date = datetime.date(2026, 8, 6)
     
     # We will generate price observations on a weekly step (every Wednesday) to keep database sizes lean
     # while providing 20 years of point-to-point history that is fast to calculate and load.
@@ -165,10 +165,14 @@ def generate_mock_data(db: Session):
 
             # Generate 4 Quarters for this year
             for q in range(1, 5):
-                q_month = q * 3
-                period_end_q = datetime.date(yr if q < 4 else yr + 1, q_month if q < 4 else 3, 30 if q_month in [6, 9] else (31 if q_month == 12 else 31))
-                if period_end_q.month == 3:
-                    period_end_q = datetime.date(yr, 3, 31)
+                if q == 1:
+                    period_end_q = datetime.date(yr, 6, 30)
+                elif q == 2:
+                    period_end_q = datetime.date(yr, 9, 30)
+                elif q == 3:
+                    period_end_q = datetime.date(yr, 12, 31)
+                else:
+                    period_end_q = datetime.date(yr + 1, 3, 31)
                 
                 # Quarterly split: roughly 22-28% of annual sales
                 sales_q = sales_yr * random.uniform(0.22, 0.28)

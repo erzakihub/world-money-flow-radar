@@ -18,6 +18,9 @@ const AVAILABLE_FIELDS = [
   { value: "composite_score", label: "Composite Rank", desc: "Unified multi-factor rank score" },
   { value: "piotroski_f_score", label: "Piotroski F-Score", desc: "9-point accounting health score" },
   { value: "altman_z_score", label: "Altman Z-Score", desc: "Bankruptcy likelihood index" },
+  { value: "dividend_yield", label: "Dividend Yield (%)", desc: "Annual dividend yield" },
+  { value: "sales_cagr_3y", label: "Sales CAGR 3Y (%)", desc: "3 Year Sales Growth" },
+  { value: "price_above_dma200", label: "Price > 200DMA", desc: "1 if true, 0 if false" },
 ];
 
 const PRESETS = [
@@ -47,6 +50,60 @@ const PRESETS = [
       { field: "value_score", op: ">=", val: "70" },
       { field: "piotroski_f_score", op: ">=", val: "6" }
     ]
+  },
+  {
+    name: "Forensic Clean Balance Sheet",
+    desc: "Debt/Equity < 0.3, ROCE >= 18, Quality Score >= 70",
+    rules: [
+      { field: "debt_equity", op: "<", val: "0.3" },
+      { field: "roce", op: ">=", val: "18" },
+      { field: "quality_score", op: ">=", val: "70" }
+    ]
+  },
+  {
+    name: "Dividend Champions",
+    desc: "Dividend Yield > 2.5, PE < 25, Debt/Equity < 0.5",
+    rules: [
+      { field: "dividend_yield", op: ">", val: "2.5" },
+      { field: "pe", op: "<", val: "25" },
+      { field: "debt_equity", op: "<", val: "0.5" }
+    ]
+  },
+  {
+    name: "Coffee Can Candidates",
+    desc: "ROCE >= 15, Sales CAGR 3Y >= 10, Quality Score >= 65",
+    rules: [
+      { field: "roce", op: ">=", val: "15" },
+      { field: "sales_cagr_3y", op: ">=", val: "10" },
+      { field: "quality_score", op: ">=", val: "65" }
+    ]
+  },
+  {
+    name: "Turnaround Recovery",
+    desc: "PE < 12, Growth Score >= 60, Momentum Score >= 55",
+    rules: [
+      { field: "pe", op: "<", val: "12" },
+      { field: "growth_score", op: ">=", val: "60" },
+      { field: "momentum_score", op: ">=", val: "55" }
+    ]
+  },
+  {
+    name: "High Momentum Runners",
+    desc: "Momentum Score >= 75, Price > 200DMA, Composite >= 60",
+    rules: [
+      { field: "momentum_score", op: ">=", val: "75" },
+      { field: "price_above_dma200", op: "==", val: "1" },
+      { field: "composite_score", op: ">=", val: "60" }
+    ]
+  },
+  {
+    name: "SME Hidden Gems",
+    desc: "Market Cap < 500, ROE >= 20, Growth Score >= 70",
+    rules: [
+      { field: "market_cap", op: "<", val: "500" },
+      { field: "roe", op: ">=", val: "20" },
+      { field: "growth_score", op: ">=", val: "70" }
+    ]
   }
 ];
 
@@ -57,6 +114,8 @@ export default function Screener({ onSelectStock }: ScreenerProps) {
   const [matches, setMatches] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [hasScanned, setHasScanned] = useState(false);
+  const [sortField, setSortField] = useState<string>("composite_score");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
 
   const handleAddRule = () => {
     setRules([...rules, { field: "pe", op: "<", val: "25" }]);
@@ -94,6 +153,34 @@ export default function Screener({ onSelectStock }: ScreenerProps) {
     }
     setLoading(false);
   };
+
+  const handleSort = (field: string) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    } else {
+      setSortField(field);
+      setSortDirection("desc");
+    }
+  };
+
+  const renderSortIcon = (field: string) => {
+    if (sortField !== field) return null;
+    return sortDirection === "asc" ? " ▲" : " ▼";
+  };
+
+  const sortedMatches = [...matches].sort((a, b) => {
+    let aVal = a[sortField];
+    let bVal = b[sortField];
+    if (aVal === null || aVal === undefined) aVal = -999999;
+    if (bVal === null || bVal === undefined) bVal = -999999;
+    if (typeof aVal === "string") aVal = aVal.toLowerCase();
+    if (typeof bVal === "string") bVal = bVal.toLowerCase();
+    if (aVal < bVal) return sortDirection === "asc" ? -1 : 1;
+    if (aVal > bVal) return sortDirection === "asc" ? 1 : -1;
+    return 0;
+  });
+
+  const currentDate = new Date().toLocaleDateString();
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -209,57 +296,70 @@ export default function Screener({ onSelectStock }: ScreenerProps) {
           {hasScanned && matches.length === 0 && (
             <div className="flex-1 flex flex-col items-center justify-center gap-2 py-10">
               <AlertCircle className="w-8 h-8 text-brand-yellow" />
-              <span className="text-xs text-gray-500 font-medium">No active stocks matched the filter conditions</span>
+              <span className="text-xs text-gray-500 font-medium">No matches found. Try adjusting your filter conditions to broaden the search.</span>
             </div>
           )}
 
           {hasScanned && matches.length > 0 && (
-            <div className="overflow-x-auto flex-1">
-              <table className="w-full text-left text-xs border-collapse">
-                <thead>
-                  <tr className="bg-gray-950/40 border-b border-gray-850 font-mono text-[9px] text-gray-400">
-                    <th className="p-3">Symbol</th>
-                    <th className="p-3">Company Name</th>
-                    <th className="p-3">Sector</th>
-                    <th className="p-3 text-right">PE</th>
-                    <th className="p-3 text-right">ROCE</th>
-                    <th className="p-3 text-right">D/E</th>
-                    <th className="p-3 text-center">Composite</th>
-                    <th className="p-3 text-center">Profile</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-900 font-sans text-gray-300">
-                  {matches.map((m) => (
-                    <tr key={m.symbol} className="hover:bg-white/[0.01] transition-colors">
-                      <td className="p-3 font-bold font-mono text-white">{m.symbol}</td>
-                      <td className="p-3 font-medium truncate max-w-[150px]">{m.name}</td>
-                      <td className="p-3 text-gray-400">{m.sector}</td>
-                      <td className="p-3 font-mono text-right text-white">
-                        {m.pe ? m.pe.toFixed(1) : "N/A"}
-                      </td>
-                      <td className="p-3 font-mono text-right text-brand-green">
-                        {m.roce.toFixed(1)}%
-                      </td>
-                      <td className="p-3 font-mono text-right">
-                        {m.debt_equity !== null ? m.debt_equity.toFixed(2) : "N/A"}
-                      </td>
-                      <td className="p-3 text-center">
-                        <span className="bg-brand-blue/10 text-brand-blue border border-brand-blue/20 px-2 py-0.5 rounded font-mono text-[10px] font-bold">
-                          {m.composite_score.toFixed(0)}
-                        </span>
-                      </td>
-                      <td className="p-3 text-center">
-                        <button
-                          onClick={() => onSelectStock(m.symbol)}
-                          className="px-2 py-0.5 bg-gray-900 hover:bg-gray-800 border border-gray-800 rounded text-[9px] font-semibold text-gray-200 transition-colors cursor-pointer"
-                        >
-                          View
-                        </button>
-                      </td>
+            <div className="flex-1 flex flex-col">
+              <div className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 px-4 py-2 rounded-lg text-xs font-mono font-bold mb-4 flex items-center justify-between">
+                <span>{matches.length} stocks matched on {currentDate}</span>
+              </div>
+              <div className="overflow-x-auto flex-1">
+                <table className="w-full text-left text-xs border-collapse">
+                  <thead>
+                    <tr className="bg-gray-950/40 border-b border-gray-850 font-mono text-[9px] text-gray-400">
+                      <th className="p-3 cursor-pointer hover:text-white" onClick={() => handleSort("symbol")}>Symbol{renderSortIcon("symbol")}</th>
+                      <th className="p-3 cursor-pointer hover:text-white" onClick={() => handleSort("name")}>Company Name{renderSortIcon("name")}</th>
+                      <th className="p-3 cursor-pointer hover:text-white" onClick={() => handleSort("sector")}>Sector{renderSortIcon("sector")}</th>
+                      <th className="p-3 text-right cursor-pointer hover:text-white" onClick={() => handleSort("market_cap")}>Mcap (Cr){renderSortIcon("market_cap")}</th>
+                      <th className="p-3 text-right cursor-pointer hover:text-white" onClick={() => handleSort("pe")}>PE{renderSortIcon("pe")}</th>
+                      <th className="p-3 text-right cursor-pointer hover:text-white" onClick={() => handleSort("roce")}>ROCE{renderSortIcon("roce")}</th>
+                      <th className="p-3 text-right cursor-pointer hover:text-white" onClick={() => handleSort("debt_equity")}>D/E{renderSortIcon("debt_equity")}</th>
+                      <th className="p-3 text-center cursor-pointer hover:text-white" onClick={() => handleSort("composite_score")}>Factor Composite Score{renderSortIcon("composite_score")}</th>
+                      <th className="p-3 text-center">Profile</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="divide-y divide-gray-900 font-sans text-gray-300">
+                    {sortedMatches.map((m) => {
+                      let badgeColor = "bg-brand-blue/10 text-brand-blue border-brand-blue/20";
+                      if (m.composite_score >= 80) badgeColor = "bg-emerald-500/10 text-emerald-400 border-emerald-500/30";
+                      else if (m.composite_score <= 40) badgeColor = "bg-rose-500/10 text-rose-400 border-rose-500/30";
+
+                      return (
+                        <tr key={m.symbol} className="hover:bg-white/[0.01] transition-colors">
+                          <td className="p-3 font-bold font-mono text-white">{m.symbol}</td>
+                          <td className="p-3 font-medium truncate max-w-[150px]">{m.name}</td>
+                          <td className="p-3 text-gray-400">{m.sector}</td>
+                          <td className="p-3 font-mono text-right">{m.market_cap ? m.market_cap.toFixed(0) : "N/A"}</td>
+                          <td className="p-3 font-mono text-right text-white">
+                            {m.pe ? m.pe.toFixed(1) : "N/A"}
+                          </td>
+                          <td className="p-3 font-mono text-right text-brand-green">
+                            {m.roce ? m.roce.toFixed(1) + "%" : "N/A"}
+                          </td>
+                          <td className="p-3 font-mono text-right">
+                            {m.debt_equity !== null && m.debt_equity !== undefined ? m.debt_equity.toFixed(2) : "N/A"}
+                          </td>
+                          <td className="p-3 text-center">
+                            <span className={`px-2 py-0.5 border rounded font-mono text-[10px] font-bold ${badgeColor}`}>
+                              {m.composite_score ? m.composite_score.toFixed(0) : "N/A"}
+                            </span>
+                          </td>
+                          <td className="p-3 text-center">
+                            <button
+                              onClick={() => onSelectStock(m.symbol)}
+                              className="px-2 py-0.5 bg-gray-900 hover:bg-gray-800 border border-gray-800 rounded text-[9px] font-semibold text-gray-200 transition-colors cursor-pointer"
+                            >
+                              View
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
             </div>
           )}
         </div>

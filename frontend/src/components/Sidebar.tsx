@@ -129,10 +129,11 @@ export default function Sidebar({ activePage, setActivePage, dataHealth }: Sideb
 
           {/* Section 2: Indian Equity Quant Engine */}
           <div className="pt-2 border-t border-gray-800/40">
-            <div className="px-2 pb-1.5">
-              <span className="text-[9px] text-gray-500 font-mono font-bold uppercase tracking-[0.14em]">
+            <div className="px-2 pb-1.5 flex items-center justify-between">
+              <span className="text-[9px] text-indigo-400 font-mono font-bold uppercase tracking-[0.14em]">
                 Equity Quant Modules
               </span>
+              <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
             </div>
             <div className="space-y-0.5">
               {QUANT_ITEMS.map((item) => {
@@ -144,25 +145,28 @@ export default function Sidebar({ activePage, setActivePage, dataHealth }: Sideb
                     onClick={() => setActivePage(item.id)}
                     className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left transition-all duration-150 group cursor-pointer ${
                       isActive 
-                        ? "bg-white/[0.05] text-white border border-gray-700/60 shadow-sm" 
-                        : "text-gray-500 hover:bg-white/[0.02] hover:text-gray-300 border border-transparent"
+                        ? "bg-gradient-to-r from-indigo-500/15 via-indigo-500/5 to-transparent text-white border border-indigo-500/30 shadow-md shadow-indigo-500/5" 
+                        : "text-gray-400 hover:bg-white/[0.03] hover:text-gray-200 border border-transparent"
                     }`}
                   >
                     <div className={`w-6 h-6 rounded-md flex items-center justify-center shrink-0 transition-colors ${
                       isActive 
                         ? "bg-indigo-500/20 text-indigo-400" 
-                        : "bg-transparent text-gray-600 group-hover:text-gray-400"
+                        : "bg-transparent text-gray-500 group-hover:text-gray-300"
                     }`}>
                       <Icon className="w-3.5 h-3.5" />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <span className={`text-[11px] font-medium block leading-tight truncate ${isActive ? "text-white" : ""}`}>
+                      <span className={`block leading-tight truncate ${isActive ? "text-[12px] font-semibold text-white" : "text-[11px] font-medium"}`}>
                         {item.label}
                       </span>
-                      <span className="text-[8px] font-mono text-gray-600 block truncate mt-0.5">
+                      <span className={`block truncate mt-0.5 ${isActive ? "text-[9px] font-mono text-gray-500" : "text-[8px] font-mono text-gray-600"}`}>
                         {item.desc}
                       </span>
                     </div>
+                    {isActive && (
+                      <div className="w-1.5 h-4 bg-indigo-400 rounded-full shrink-0 shadow-sm shadow-indigo-400" />
+                    )}
                   </button>
                 );
               })}
@@ -171,12 +175,18 @@ export default function Sidebar({ activePage, setActivePage, dataHealth }: Sideb
         </div>
 
         {/* Terminal Footer */}
-        <div className="p-3 border-t border-gray-800/40 bg-[#0c0e16]/80 text-[9px] font-mono text-gray-500 flex items-center justify-between">
-          <div className="flex items-center gap-1.5">
-            <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span>GLOBAL MACRO FEED ACTIVE</span>
+        <div className="p-3 border-t border-gray-800/40 bg-[#0c0e16]/80 flex flex-col gap-1.5">
+          <div className="flex items-center justify-between text-[9px] font-mono text-gray-500">
+            <div className="flex items-center gap-1.5">
+              <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_4px_rgba(52,211,153,0.8)]" />
+              <span className="tracking-wider">MACRO FEED: ACTIVE</span>
+            </div>
+            <span className="text-gray-600 tracking-wider">v2.4 PRO</span>
           </div>
-          <span className="text-gray-600">v2.4 Pro</span>
+          <div className="flex items-center gap-1.5 text-[9px] font-mono text-gray-500">
+            <div className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse shadow-[0_0_4px_rgba(129,140,248,0.8)]" />
+            <span className="tracking-wider">QUANT ENGINE: ONLINE</span>
+          </div>
         </div>
       </div>
     </aside>

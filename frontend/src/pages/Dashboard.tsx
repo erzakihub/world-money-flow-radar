@@ -55,8 +55,34 @@ export default function Dashboard() {
     );
   }
 
-  const { advances, declines, market_regime, pct_above_200dma, top_gainers, top_losers, total_active_stocks, mainboard_count, sme_count, date } = data;
+  const { advances, declines, market_regime, pct_above_200dma, top_gainers, top_losers, total_active_stocks, mainboard_count, sme_count, date, stocks = [] } = data;
   const adaptiveWeights = regimeData?.adaptive_weights || { quality: 0.3, growth: 0.25, value: 0.15, momentum: 0.2, risk: 0.1 };
+
+  const sectorData = stocks.reduce((acc: any, stock: any) => {
+    if (!stock.sector) return acc;
+    if (!acc[stock.sector]) acc[stock.sector] = { total: 0, count: 0 };
+    acc[stock.sector].total += (stock.change_pct || stock.change || 0);
+    acc[stock.sector].count += 1;
+    return acc;
+  }, {});
+  
+  const sectors = Object.entries(sectorData)
+    .map(([sector, d]: any) => ({
+      sector,
+      ret: d.total / d.count
+    }))
+    .sort((a, b) => b.ret - a.ret);
+
+  const factorPerformance = Object.entries(adaptiveWeights).map(([factor, weight]: any) => {
+    // Simulated daily performance indicator based on adaptive weight
+    const simRet = (weight * 10) - 1.5; 
+    return {
+      name: factor,
+      weight,
+      simRet,
+      isWinning: simRet > 0
+    };
+  });
 
   return (
     <div className="space-y-6 animate-fade-in pb-10">
@@ -132,6 +158,25 @@ export default function Dashboard() {
             ))}
           </div>
         </div>
+        {/* Factor Performance Cards */}
+        <div className="mt-6 border-t border-gray-800/50 pt-5">
+          <span className="text-[10px] font-mono text-gray-400 uppercase tracking-widest block mb-3 font-semibold">
+            Factor Performance Today (Simulated based on adaptive weights)
+          </span>
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+            {factorPerformance.map((f: any) => (
+              <div key={f.name} className={`bg-[#090b12] border p-3 rounded-xl flex flex-col justify-between min-h-[70px] ${f.isWinning ? 'border-emerald-500/20' : 'border-rose-500/20'}`}>
+                <span className="text-[11px] font-medium text-gray-300 capitalize">{f.name}</span>
+                <div className="flex items-center justify-between mt-1">
+                  <span className={`text-xs font-mono font-bold ${f.isWinning ? 'text-emerald-400' : 'text-rose-400'}`}>
+                    {f.simRet > 0 ? '+' : ''}{f.simRet.toFixed(2)}%
+                  </span>
+                  <span className="text-[9px] text-gray-500 font-mono">W: {Math.round(f.weight * 100)}%</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* Metrics Grid */}
@@ -148,9 +193,12 @@ export default function Dashboard() {
             <span className="text-xl font-bold text-rose-400 font-mono">{declines}</span>
             <span className="text-xs text-gray-500">D</span>
           </div>
-          <div className="w-full bg-gray-950 h-2 rounded-full overflow-hidden mt-3 flex border border-gray-800/40">
-            <div className="h-full bg-emerald-400" style={{ width: `${(advances / (advances + declines || 1)) * 100}%` }} />
-            <div className="h-full bg-rose-400" style={{ width: `${(declines / (advances + declines || 1)) * 100}%` }} />
+          <div className="w-full bg-gray-950 h-3 rounded-full overflow-hidden mt-3 flex border border-gray-800/40 shadow-inner">
+            <div className="h-full bg-emerald-500/80 transition-all duration-1000 ease-out" style={{ width: `${(advances / (advances + declines || 1)) * 100}%` }} />
+            <div className="h-full bg-rose-500/80 transition-all duration-1000 ease-out" style={{ width: `${(declines / (advances + declines || 1)) * 100}%` }} />
+          </div>
+          <div className="mt-2 text-center text-xs font-mono font-bold text-gray-400">
+             Ratio: {(advances / (declines || 1)).toFixed(2)}x
           </div>
         </div>
 
@@ -254,6 +302,42 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+
+      {/* Sector Performance Heatmap */}
+      {sectors.length > 0 && (
+        <div className="bg-[#0e121e] border border-gray-800/50 p-5 rounded-2xl shadow-xl mt-6">
+          <h4 className="text-xs font-mono text-gray-300 uppercase tracking-widest flex items-center gap-2 font-bold mb-4">
+            <Layers className="w-4 h-4 text-brand-blue" />
+            <span>Sector Performance Heatmap</span>
+          </h4>
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
+            {sectors.map((s: any) => {
+              const isPositive = s.ret > 0;
+              // color intensity based on magnitude (cap at 3%)
+              const intensity = Math.min(Math.abs(s.ret) / 3, 1);
+              let bgStyle = isPositive 
+                ? `rgba(16, 185, 129, ${0.1 + intensity * 0.3})`
+                : `rgba(244, 63, 94, ${0.1 + intensity * 0.3})`;
+              let borderStyle = isPositive 
+                ? `rgba(16, 185, 129, ${0.3 + intensity * 0.3})`
+                : `rgba(244, 63, 94, ${0.3 + intensity * 0.3})`;
+
+              return (
+                <div 
+                  key={s.sector} 
+                  className="p-3 rounded-xl border flex flex-col justify-between min-h-[80px]"
+                  style={{ backgroundColor: bgStyle, borderColor: borderStyle }}
+                >
+                  <span className="text-[10px] font-bold text-white leading-tight break-words">{s.sector}</span>
+                  <span className={`text-xs font-mono font-bold mt-2 ${isPositive ? 'text-emerald-400' : 'text-rose-400'}`}>
+                    {isPositive ? '+' : ''}{s.ret.toFixed(2)}%
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
