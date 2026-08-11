@@ -28,8 +28,10 @@ def get_db():
             Base.metadata.create_all(bind=engine)
             db_temp = SessionLocal()
             try:
-                from .data_sources.mock_generator import generate_mock_data
-                generate_mock_data(db_temp)
+                from .data_sources.mock_generator import generate_mock_data as generate_macro_data
+                generate_macro_data(db_temp)
+                from .services.seed_generator import generate_mock_data as generate_quant_data
+                generate_quant_data(db_temp)
             except Exception as e:
                 print("Seeder note:", e)
             finally:

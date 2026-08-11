@@ -1880,9 +1880,22 @@ def get_stock_financials(symbol: str, db: Session = Depends(get_db)):
     if not stock:
         raise HTTPException(status_code=404, detail="Stock not found")
         
-    annual = db.query(FinancialAnnual).filter(FinancialAnnual.stock_id == stock.id).order_by(FinancialAnnual.date.asc()).all()
-    quarterly = db.query(FinancialQuarterly).filter(FinancialQuarterly.stock_id == stock.id).order_by(FinancialQuarterly.date.asc()).all()
+    annual = db.query(FinancialAnnual).filter(FinancialAnnual.stock_id == stock.id).order_by(FinancialAnnual.date.desc()).all()
+    quarterly = db.query(FinancialQuarterly).filter(FinancialQuarterly.stock_id == stock.id).order_by(FinancialQuarterly.date.desc()).all()
     
+    def get_quarter_label(d):
+        m = d.month
+        y = d.year
+        if m == 6:
+            return f"Q1 FY{str(y + 1)[2:]}"
+        elif m == 9:
+            return f"Q2 FY{str(y + 1)[2:]}"
+        elif m == 12:
+            return f"Q3 FY{str(y + 1)[2:]}"
+        elif m == 3:
+            return f"Q4 FY{str(y)[2:]}"
+        return f"{y}-M{m}"
+
     return {
         "annual": [{
             "date": a.date.strftime("%Y-%m-%d"),
@@ -1909,6 +1922,8 @@ def get_stock_financials(symbol: str, db: Session = Depends(get_db)):
         } for a in annual],
         "quarterly": [{
             "date": q.date.strftime("%Y-%m-%d"),
+            "period": get_quarter_label(q.date),
+            "announcement_date": q.announcement_date.strftime("%Y-%m-%d") if q.announcement_date else None,
             "sales": q.sales,
             "ebitda": q.ebitda,
             "finance_cost": q.finance_cost,
