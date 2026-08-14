@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, Boolean, DateTime, ForeignKey, Date, Text, JSON
+from sqlalchemy import Column, Integer, String, Float, Boolean, DateTime, ForeignKey, Date, Text, JSON, Index
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from .database import Base
@@ -46,6 +46,9 @@ class TimeSeries(Base):
 
 class Observation(Base):
     __tablename__ = "observations"
+    __table_args__ = (
+        Index("idx_obs_ts_date", "time_series_id", "date"),
+    )
 
     id = Column(Integer, primary_key=True, index=True)
     time_series_id = Column(Integer, ForeignKey("time_series.id"))
@@ -63,6 +66,7 @@ class Instrument(Base):
     name = Column(String)
     type = Column(String)  # Equity, Bond, FX, Commodity, Crypto
     region = Column(String, nullable=True)
+    country = Column(String, nullable=True)
     asset_class = Column(String, nullable=True)
     notes = Column(Text, nullable=True)
 
@@ -70,6 +74,9 @@ class Instrument(Base):
 
 class Price(Base):
     __tablename__ = "prices"
+    __table_args__ = (
+        Index("idx_price_inst_date", "instrument_id", "date"),
+    )
 
     id = Column(Integer, primary_key=True, index=True)
     instrument_id = Column(Integer, ForeignKey("instruments.id"))
@@ -190,6 +197,9 @@ class StockSymbolHistory(Base):
 
 class DailyPrice(Base):
     __tablename__ = "daily_prices"
+    __table_args__ = (
+        Index("idx_daily_price_stock_date", "stock_id", "date"),
+    )
 
     id = Column(Integer, primary_key=True, index=True)
     stock_id = Column(Integer, ForeignKey("stocks.id", ondelete="CASCADE"), index=True)
@@ -208,6 +218,9 @@ class DailyPrice(Base):
 
 class AdjustedPrice(Base):
     __tablename__ = "adjusted_prices"
+    __table_args__ = (
+        Index("idx_adj_price_stock_date", "stock_id", "date"),
+    )
 
     id = Column(Integer, primary_key=True, index=True)
     stock_id = Column(Integer, ForeignKey("stocks.id", ondelete="CASCADE"), index=True)
@@ -224,6 +237,9 @@ class AdjustedPrice(Base):
 
 class CorporateAction(Base):
     __tablename__ = "corporate_actions"
+    __table_args__ = (
+        Index("idx_corp_act_stock_date", "stock_id", "date"),
+    )
 
     id = Column(Integer, primary_key=True, index=True)
     stock_id = Column(Integer, ForeignKey("stocks.id", ondelete="CASCADE"), index=True)
@@ -238,6 +254,9 @@ class CorporateAction(Base):
 
 class FinancialQuarterly(Base):
     __tablename__ = "financials_quarterly"
+    __table_args__ = (
+        Index("idx_fin_q_stock_date", "stock_id", "date"),
+    )
 
     id = Column(Integer, primary_key=True, index=True)
     stock_id = Column(Integer, ForeignKey("stocks.id", ondelete="CASCADE"), index=True)
@@ -263,6 +282,9 @@ class FinancialQuarterly(Base):
 
 class FinancialAnnual(Base):
     __tablename__ = "financials_annual"
+    __table_args__ = (
+        Index("idx_fin_a_stock_date", "stock_id", "date"),
+    )
 
     id = Column(Integer, primary_key=True, index=True)
     stock_id = Column(Integer, ForeignKey("stocks.id", ondelete="CASCADE"), index=True)
@@ -307,6 +329,9 @@ class FinancialAnnual(Base):
 
 class RatiosDaily(Base):
     __tablename__ = "ratios_daily"
+    __table_args__ = (
+        Index("idx_ratios_d_stock_date", "stock_id", "date"),
+    )
 
     id = Column(Integer, primary_key=True, index=True)
     stock_id = Column(Integer, ForeignKey("stocks.id", ondelete="CASCADE"), index=True)
@@ -325,6 +350,9 @@ class RatiosDaily(Base):
 
 class RatiosQuarterly(Base):
     __tablename__ = "ratios_quarterly"
+    __table_args__ = (
+        Index("idx_ratios_q_stock_date", "stock_id", "date"),
+    )
 
     id = Column(Integer, primary_key=True, index=True)
     stock_id = Column(Integer, ForeignKey("stocks.id", ondelete="CASCADE"), index=True)
@@ -342,7 +370,7 @@ class RatiosQuarterly(Base):
     pat_cagr_3y = Column(Float, nullable=True)
     working_capital = Column(Float, nullable=True)
     
-    # Advanced metrics
+    # Advanced metrics & Forensics
     gross_block = Column(Float, nullable=True)
     net_block = Column(Float, nullable=True)
     cwip = Column(Float, nullable=True)
@@ -351,13 +379,19 @@ class RatiosQuarterly(Base):
     free_cash_flow = Column(Float, nullable=True)
     cash_conversion_cycle = Column(Float, nullable=True)
     piotroski_f_score = Column(Integer, nullable=True)
-    altman_z_score = Column(Float, nullable=True)
+    piotroski_f_score_9 = Column(Integer, nullable=True)  # Authentic 0-9 scale
+    beneish_m_score = Column(Float, nullable=True)       # Manipulation threshold: > -1.78
     sloan_ratio = Column(Float, nullable=True)
+    sloan_accruals_ratio = Column(Float, nullable=True)  # (Net Income - CFO)/Assets
+    altman_z_score = Column(Float, nullable=True)
 
     stock = relationship("Stock", back_populates="ratios_quarterly")
 
 class ShareholdingPattern(Base):
     __tablename__ = "shareholding_pattern"
+    __table_args__ = (
+        Index("idx_sh_pattern_stock_date", "stock_id", "date"),
+    )
 
     id = Column(Integer, primary_key=True, index=True)
     stock_id = Column(Integer, ForeignKey("stocks.id", ondelete="CASCADE"), index=True)
@@ -373,6 +407,9 @@ class ShareholdingPattern(Base):
 
 class FactorScores(Base):
     __tablename__ = "factor_scores"
+    __table_args__ = (
+        Index("idx_factors_stock_date", "stock_id", "date"),
+    )
 
     id = Column(Integer, primary_key=True, index=True)
     stock_id = Column(Integer, ForeignKey("stocks.id", ondelete="CASCADE"), index=True)

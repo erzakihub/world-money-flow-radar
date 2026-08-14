@@ -32,6 +32,9 @@ const HistoricalSimilarityEngine = lazy(() => import("./pages/HistoricalSimilari
 const DataQualityCoverage = lazy(() => import("./pages/DataQualityCoverage"));
 const GlobalCentralBanks = lazy(() => import("./pages/GlobalCentralBanks"));
 const ReserveFlowTracker = lazy(() => import("./pages/ReserveFlowTracker"));
+const RrgEngine = lazy(() => import("./pages/RrgEngine"));
+const CountryEconomicCockpit = lazy(() => import("./pages/CountryEconomicCockpit"));
+const CrossBorderMatrix = lazy(() => import("./pages/CrossBorderMatrix"));
 
 export default function App() {
   const [activePage, setActivePage] = useState("command-centre");
@@ -65,8 +68,14 @@ export default function App() {
               return <GlobalFlowBoard />;
             case "apex-predictor":
               return <ApexLeadPredictor />;
+            case "rrg-engine":
+              return <RrgEngine />;
             case "country-liquidity":
               return <CountryLiquidityGrid />;
+            case "country-cockpit":
+              return <CountryEconomicCockpit />;
+            case "cross-border-matrix":
+              return <CrossBorderMatrix />;
             case "balance-of-payments":
               return <BalanceOfPayments />;
             case "trade-flow-map":
