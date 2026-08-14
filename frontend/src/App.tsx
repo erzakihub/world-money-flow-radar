@@ -40,6 +40,7 @@ export default function App() {
   const [activePage, setActivePage] = useState("command-centre");
   const [backtestConfig, setBacktestConfig] = useState<any>(null);
   const [backtestResultData, setBacktestResultData] = useState<any>(null);
+  const [selectedStockSymbol, setSelectedStockSymbol] = useState("RELIANCE");
 
   const handleLoadTemplate = (name: string, config: any) => {
     setBacktestConfig(config);
@@ -49,6 +50,11 @@ export default function App() {
   const handleRunBacktest = (result: any) => {
     setBacktestResultData(result);
     setActivePage("backtest-results");
+  };
+
+  const handleSelectStock = (symbol: string) => {
+    setSelectedStockSymbol(symbol);
+    setActivePage("stock-research");
   };
 
   const renderPage = () => {
@@ -107,9 +113,9 @@ export default function App() {
             case "dashboard":
               return <Dashboard />;
             case "stock-universe":
-              return <StockUniverse onSelectStock={() => {}} />;
+              return <StockUniverse onSelectStock={handleSelectStock} />;
             case "screener":
-              return <Screener onSelectStock={() => {}} />;
+              return <Screener onSelectStock={handleSelectStock} />;
             case "strategy-builder":
               return <StrategyBuilder onRunBacktest={handleRunBacktest} />;
             case "strategy-library":
@@ -117,9 +123,9 @@ export default function App() {
             case "backtest-results":
               return <BacktestResults result={backtestResultData} />;
             case "stock-research":
-              return <SingleStockResearch selectedSymbol="RELIANCE" />;
+              return <SingleStockResearch selectedSymbol={selectedStockSymbol} />;
             case "portfolio":
-              return <PortfolioPage onSelectStock={() => {}} />;
+              return <PortfolioPage onSelectStock={handleSelectStock} />;
             case "market-breadth":
               return <MarketBreadth />;
             case "data-admin":

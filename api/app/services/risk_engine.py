@@ -12,8 +12,26 @@ def compute_portfolio_risk_analytics(db: Session, holdings: list, target_date: d
     if not holdings:
         return {}
 
-    symbols = [h["symbol"] for h in holdings]
-    weights_map = {h["symbol"]: h["weight"] / 100.0 for h in holdings}
+    total_val = 0.0
+    val_map = {}
+    for h in holdings:
+        sym = h.get("symbol")
+        if not sym:
+            continue
+        if "weight" in h and h["weight"] is not None:
+            val_map[sym] = float(h["weight"])
+        elif "shares" in h and "average_buy_price" in h:
+            val = float(h["shares"]) * float(h["average_buy_price"])
+            val_map[sym] = val
+        else:
+            val_map[sym] = 1.0
+        total_val += val_map[sym]
+        
+    if not val_map:
+        return {}
+
+    weights_map = {sym: (val / total_val) if total_val > 0 else (1.0 / len(val_map)) for sym, val in val_map.items()}
+    symbols = list(weights_map.keys())
 
     # Fetch stocks master to match sectors
     stocks = db.query(Stock).filter(Stock.symbol.in_(symbols)).all()
