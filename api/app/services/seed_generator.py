@@ -262,12 +262,32 @@ def generate_mock_data(db: Session):
             db.add(act)
 
         # Generate Price Observations
-        # Starting base price: High for TCS/Reliance, low for SMEs
-        base_price = 150.0 if not stock.is_sme else 15.0
-        if stock.symbol in ["TCS", "INFY"]:
-            base_price = 400.0
+        # Starting base price calibrated to historical Indian bluechip levels
+        base_price = 100.0
+        if stock.symbol == "RELIANCE":
+            base_price = 120.0
+        elif stock.symbol == "TCS":
+            base_price = 180.0
         elif stock.symbol == "HDFCBANK":
-            base_price = 250.0
+            base_price = 110.0
+        elif stock.symbol == "INFY":
+            base_price = 140.0
+        elif stock.symbol == "ITC":
+            base_price = 65.0
+        elif stock.symbol == "TATAMOTORS":
+            base_price = 90.0
+        elif stock.symbol == "CIPLA":
+            base_price = 130.0
+        elif stock.symbol == "ASTRA":
+            base_price = 35.0
+        elif stock.symbol == "BSE":
+            base_price = 150.0
+        elif stock.symbol == "SME_ALPHA":
+            base_price = 45.0
+        elif stock.symbol == "SME_BETA":
+            base_price = 30.0
+        elif stock.symbol == "OLD_TELE":
+            base_price = 80.0
 
         daily_prices_batch = []
         adj_prices_batch = []
@@ -277,19 +297,29 @@ def generate_mock_data(db: Session):
 
         price = base_price
         
+        drift_by_symbol = {
+            "RELIANCE": 0.0032,
+            "TCS": 0.0034,
+            "HDFCBANK": 0.0031,
+            "INFY": 0.0030,
+            "ITC": 0.0024,
+            "TATAMOTORS": 0.0033,
+            "CIPLA": 0.0028,
+            "ASTRA": 0.0042,
+            "BSE": 0.0055,
+            "SME_ALPHA": 0.0050,
+            "SME_BETA": 0.0040,
+            "OLD_TELE": -0.0055
+        }
+        
         # Compute adjustment multiplier tracking
-        # We start with adjustment factor = 1.0 at end_date and go backwards,
-        # or start with 1.0 and multiply/divide when actions occur.
-        # Let's calculate the cumulative adjustment factor for each trading date.
-        # For simplicity:
-        # A split/bonus reduces the historical adjusted price.
-        # Let's build a timeline of multipliers.
         action_multipliers = [] # list of (date, multiplier)
         for act in actions:
             if act.type in ["Split", "Bonus"]:
-                # ratio_to / ratio_from is the multiplier (e.g. 2.0).
-                # Historical prices BEFORE act.date must be divided by this multiplier.
                 action_multipliers.append((act.date, act.ratio_to / act.ratio_from))
+
+        drift = drift_by_symbol.get(stock.symbol, 0.0030)
+        vol = 0.022 if not stock.is_sme else 0.035
 
         for dt in trading_dates:
             # Check listing constraints
@@ -298,9 +328,7 @@ def generate_mock_data(db: Session):
             if stock.delisting_date and dt > stock.delisting_date:
                 continue
 
-            # Random walk price step
-            drift = 0.0015  # positive bias
-            vol = 0.035
+            # Random walk price step with positive economic drift
             price = price * (1.0 + random.normalvariate(drift, vol))
             price = max(1.0, round(price, 2))
 

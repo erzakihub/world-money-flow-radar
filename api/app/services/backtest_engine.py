@@ -314,13 +314,18 @@ def run_strategy_backtest(db: Session, strategy_config: dict, start_date: dateti
 
         eligible_stocks.sort(key=lambda x: x["composite"], reverse=True)
 
-        # 5. Buy entries matching target weights & sector caps
-        target_allocation = portfolio_value / max_holdings
-        empty_slots = max_holdings - len(holdings)
+        # Accrue standard liquid fund yield (6.0% p.a.) on uninvested cash buffer
+        cash = cash * (1.0 + (0.06 / 52.0))
 
         sector_counts = {}
         for h in holdings.values():
             sector_counts[h["sector"]] = sector_counts.get(h["sector"], 0) + 1
+
+        # Dynamic capital deployment: size positions to efficiently utilize available cash across matching candidates
+        empty_slots = max_holdings - len(holdings)
+        open_candidates_count = len([e for e in eligible_stocks if sector_counts.get(e["sector"], 0) < max_stocks_per_sector])
+        available_slots = max(1, min(empty_slots, open_candidates_count)) if open_candidates_count > 0 else max_holdings
+        target_allocation = max(portfolio_value / max_holdings, cash / available_slots)
 
         for estock in eligible_stocks:
             if empty_slots <= 0 or cash < 5000.0:

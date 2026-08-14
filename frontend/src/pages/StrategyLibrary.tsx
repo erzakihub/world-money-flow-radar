@@ -11,7 +11,7 @@ const TEMPLATES = [
     desc: "Institutional multi-factor model combining sector-neutralized residual momentum (12M-1M), high ROCE (>15%), and Piotroski financial health.",
     category: "Institutional Alpha",
     rating: "96/100",
-    baseline: { cagr: 24.8, sharpe: 1.62, maxDrawdown: -16.4 },
+    baseline: { cagr: 23.99, sharpe: 2.05, maxDrawdown: -6.66 },
     config: {
       universe: { min_market_cap: 500, sme_allowed: false },
       portfolio: { rebalance_freq: "quarterly", max_holdings: 30, max_sector_exposure: 25, transaction_cost: 0.002, slippage: 0.002 },
@@ -33,7 +33,7 @@ const TEMPLATES = [
     desc: "Screens for high FCF yield, low Sloan Accruals, zero promoter pledge, and strong balance sheets to eliminate earnings manipulation.",
     category: "Financial Forensics",
     rating: "94/100",
-    baseline: { cagr: 21.4, sharpe: 1.84, maxDrawdown: -12.1 },
+    baseline: { cagr: 25.15, sharpe: 1.97, maxDrawdown: -7.74 },
     config: {
       universe: { min_market_cap: 500, sme_allowed: false },
       portfolio: { rebalance_freq: "quarterly", max_holdings: 20, max_sector_exposure: 20, transaction_cost: 0.002, slippage: 0.002 },
@@ -54,35 +54,35 @@ const TEMPLATES = [
     desc: "Identifies stocks showing strong earnings acceleration (Sales & PAT CAGR > 15%), high ROE, and leading price momentum above 200 DMA.",
     category: "Growth & Momentum",
     rating: "92/100",
-    baseline: { cagr: 27.6, sharpe: 1.55, maxDrawdown: -19.8 },
+    baseline: { cagr: 21.02, sharpe: 1.34, maxDrawdown: -9.58 },
     config: {
       universe: { min_market_cap: 500, sme_allowed: false },
       portfolio: { rebalance_freq: "monthly", max_holdings: 15, max_sector_exposure: 30, transaction_cost: 0.002, slippage: 0.002 },
       rules: [
-        { field: "sales_cagr_3y", op: ">=", val: "12.0" },
-        { field: "pat_cagr_3y", op: ">=", val: "15.0" },
-        { field: "roe", op: ">=", val: "16.0" }
+        { field: "growth_score", op: ">=", val: "50" },
+        { field: "roe", op: ">=", val: "15.0" },
+        { field: "price_above_dma200", op: "==", val: "1" }
       ],
       exits: [
-        { field: "momentum_score", op: "<", val: "40" }
+        { field: "momentum_score", op: "<", val: "35" }
       ],
-      ranking: { quality: 30, growth: 40, value: 10, momentum: 20 },
+      ranking: { quality: 25, growth: 45, value: 10, momentum: 20 },
       start_date: "2015-01-01",
       end_date: "2026-06-30"
     }
   },
   {
     name: "Piotroski High Quality",
-    desc: "Filters for prime financial health using Piotroski F-Score >= 7, positive free cash flow, and low debt leverage ratios.",
+    desc: "Filters for prime financial health using Piotroski F-Score >= 6, positive free cash flow, and low debt leverage ratios.",
     category: "Quality Focus",
     rating: "88/100",
-    baseline: { cagr: 19.8, sharpe: 1.42, maxDrawdown: -14.5 },
+    baseline: { cagr: 25.03, sharpe: 1.73, maxDrawdown: -8.71 },
     config: {
       universe: { min_market_cap: 500, sme_allowed: true },
       portfolio: { rebalance_freq: "quarterly", max_holdings: 20, max_sector_exposure: 25, transaction_cost: 0.0025, slippage: 0.0025 },
       rules: [
-        { field: "piotroski_f_score", op: ">=", val: "7" },
-        { field: "debt_equity", op: "<=", val: "0.5" },
+        { field: "piotroski_f_score", op: ">=", val: "6" },
+        { field: "debt_equity", op: "<=", val: "0.6" },
         { field: "roce", op: ">=", val: "14.0" }
       ],
       exits: [
@@ -95,10 +95,10 @@ const TEMPLATES = [
   },
   {
     name: "Deep Value turnaround",
-    desc: "Screens for out-of-favor companies trading at deep discounts (P/E < 15, high Value Score rank) but with strong Altman Z-Scores to avoid distress.",
+    desc: "Screens for out-of-favor companies trading at deep discounts (P/E < 25, high Value Score rank) but with sound balance sheets.",
     category: "Deep Value",
     rating: "84/100",
-    baseline: { cagr: 22.3, sharpe: 1.28, maxDrawdown: -23.4 },
+    baseline: { cagr: 19.20, sharpe: 0.86, maxDrawdown: -19.81 },
     config: {
       universe: { min_market_cap: 500, sme_allowed: false },
       portfolio: { rebalance_freq: "quarterly", max_holdings: 25, max_sector_exposure: 20, transaction_cost: 0.003, slippage: 0.003 },
@@ -119,7 +119,7 @@ const TEMPLATES = [
     desc: "Targeting high-alpha, small-cap and SME stock listings showing strong ROE and rapid growth metrics before institutional coverage indices catch up.",
     category: "Small-Cap Alpha",
     rating: "79/100",
-    baseline: { cagr: 31.5, sharpe: 1.48, maxDrawdown: -24.2 },
+    baseline: { cagr: 21.30, sharpe: 0.96, maxDrawdown: -14.33 },
     config: {
       universe: { min_market_cap: 50, sme_allowed: true },
       portfolio: { rebalance_freq: "monthly", max_holdings: 10, max_sector_exposure: 40, transaction_cost: 0.004, slippage: 0.004 },
@@ -140,12 +140,12 @@ const TEMPLATES = [
     desc: "Joel Greenblatt's classic strategy filtering for high return on capital and high earnings yield to find good companies at bargain prices.",
     category: "Value + Quality",
     rating: "91/100",
-    baseline: { cagr: 20.9, sharpe: 1.51, maxDrawdown: -15.8 },
+    baseline: { cagr: 23.97, sharpe: 1.36, maxDrawdown: -10.98 },
     config: {
       universe: { min_market_cap: 500, sme_allowed: false },
       portfolio: { rebalance_freq: "quarterly", max_holdings: 25, transaction_cost: 0.002, slippage: 0.002 },
       rules: [
-        { field: "roce", op: ">=", val: "18" },
+        { field: "roce", op: ">=", val: "16" },
         { field: "debt_equity", op: "<", val: "0.6" }
       ],
       exits: [
@@ -157,32 +157,11 @@ const TEMPLATES = [
     }
   },
   {
-    name: "Dividend Aristocrat India",
-    desc: "A stable income model identifying companies with strong dividend yields supported by robust ROCE and low leverage.",
-    category: "Income + Stability",
-    rating: "87/100",
-    baseline: { cagr: 16.5, sharpe: 1.68, maxDrawdown: -11.2 },
-    config: {
-      universe: { min_market_cap: 500, sme_allowed: false },
-      portfolio: { rebalance_freq: "quarterly", max_holdings: 20, transaction_cost: 0.002, slippage: 0.002 },
-      rules: [
-        { field: "debt_equity", op: "<", val: "0.5" },
-        { field: "roce", op: ">=", val: "15" }
-      ],
-      exits: [
-        { field: "roce", op: "<", val: "10" }
-      ],
-      ranking: { quality: 40, growth: 10, value: 40, momentum: 10 },
-      start_date: "2010-01-01",
-      end_date: "2026-06-30"
-    }
-  },
-  {
     name: "Coffee Can Portfolio",
     desc: "A buy-and-hold compounder framework seeking consistent historical sales growth, high ROCE, and low debt.",
     category: "Buy & Hold Compounder",
     rating: "93/100",
-    baseline: { cagr: 18.7, sharpe: 1.92, maxDrawdown: -10.4 },
+    baseline: { cagr: 25.34, sharpe: 1.50, maxDrawdown: -11.47 },
     config: {
       universe: { min_market_cap: 500, sme_allowed: false },
       portfolio: { rebalance_freq: "annual", max_holdings: 15, transaction_cost: 0.002, slippage: 0.002 },
@@ -194,68 +173,6 @@ const TEMPLATES = [
         { field: "roce", op: "<", val: "10" }
       ],
       ranking: { quality: 45, growth: 35, value: 10, momentum: 10 },
-      start_date: "2010-01-01",
-      end_date: "2026-06-30"
-    }
-  },
-  {
-    name: "Momentum Breakout",
-    desc: "Pure momentum strategy capturing high momentum scores trading above the 200-day moving average, filtered by baseline quality.",
-    category: "Pure Momentum",
-    rating: "85/100",
-    baseline: { cagr: 25.2, sharpe: 1.39, maxDrawdown: -21.6 },
-    config: {
-      universe: { min_market_cap: 500, sme_allowed: false },
-      portfolio: { rebalance_freq: "monthly", max_holdings: 15, transaction_cost: 0.002, slippage: 0.002 },
-      rules: [
-        { field: "price_above_dma200", op: "==", val: "1" },
-        { field: "quality_score", op: ">=", val: "50" }
-      ],
-      exits: [
-        { field: "momentum_score", op: "<", val: "35" }
-      ],
-      ranking: { quality: 15, growth: 15, value: 5, momentum: 65 },
-      start_date: "2010-01-01",
-      end_date: "2026-06-30"
-    }
-  },
-  {
-    name: "Contrarian Mean Reversion",
-    desc: "Statistical arbitrage approach targeting fundamentally sound companies suffering from temporary valuation dislocations.",
-    category: "Statistical Arbitrage",
-    rating: "82/100",
-    baseline: { cagr: 19.4, sharpe: 1.31, maxDrawdown: -18.7 },
-    config: {
-      universe: { min_market_cap: 500, sme_allowed: false },
-      portfolio: { rebalance_freq: "quarterly", max_holdings: 20, transaction_cost: 0.002, slippage: 0.002 },
-      rules: [
-        { field: "quality_score", op: ">=", val: "55" }
-      ],
-      exits: [
-        { field: "pe", op: ">", val: "40" }
-      ],
-      ranking: { quality: 25, growth: 10, value: 55, momentum: 10 },
-      start_date: "2010-01-01",
-      end_date: "2026-06-30"
-    }
-  },
-  {
-    name: "Multi-Factor Hybrid Alpha",
-    desc: "An all-weather strategy blending quality, growth, value, and momentum with controlled leverage and positive trend filters.",
-    category: "All-Weather",
-    rating: "90/100",
-    baseline: { cagr: 23.6, sharpe: 1.74, maxDrawdown: -13.9 },
-    config: {
-      universe: { min_market_cap: 500, sme_allowed: false },
-      portfolio: { rebalance_freq: "quarterly", max_holdings: 25, transaction_cost: 0.002, slippage: 0.002 },
-      rules: [
-        { field: "composite_score", op: ">=", val: "60" },
-        { field: "debt_equity", op: "<", val: "0.75" }
-      ],
-      exits: [
-        { field: "composite_score", op: "<", val: "40" }
-      ],
-      ranking: { quality: 25, growth: 25, value: 25, momentum: 25 },
       start_date: "2010-01-01",
       end_date: "2026-06-30"
     }
