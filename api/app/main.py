@@ -2076,13 +2076,20 @@ def get_market_regime_endpoint(db: Session = Depends(get_db)):
 
 @app.post("/api/backtests/run")
 def run_backtest_endpoint(config: dict, db: Session = Depends(get_db)):
-    start_str = config.get("start_date", "2006-01-01")
-    end_str = config.get("end_date", "2026-06-30")
+    actual_config = config.get("config", config)
+    if not isinstance(actual_config, dict):
+        actual_config = config
+        
+    start_str = actual_config.get("start_date") or config.get("start_date", "2006-01-01")
+    end_str = actual_config.get("end_date") or config.get("end_date", "2026-06-30")
+    
+    if "name" in config and "name" not in actual_config:
+        actual_config["name"] = config["name"]
     
     start_dt = datetime.strptime(start_str, "%Y-%m-%d").date()
     end_dt = datetime.strptime(end_str, "%Y-%m-%d").date()
     
-    res = run_strategy_backtest(db, config, start_dt, end_dt)
+    res = run_strategy_backtest(db, actual_config, start_dt, end_dt)
     return res
 
 @app.get("/api/portfolios")
