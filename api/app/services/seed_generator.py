@@ -1,4 +1,6 @@
 import datetime
+import os
+import json
 import random
 import numpy as np
 from sqlalchemy.orm import Session
@@ -15,167 +17,203 @@ def generate_mock_data(db: Session):
         print("Database already contains data. Skipping seeding.")
         return
 
-    print("Seeding database with 20 years of high-fidelity Indian equities data...")
+    print("Seeding database with 12+ years of institutional Indian equities & financial statements data...")
 
-    # Define representative stocks
-    stocks_meta = [
-        # Mainboard - Large Cap
-        {"symbol": "RELIANCE", "company_name": "Reliance Industries Limited", "isin": "INE002A01018", "exchange": "NSE", "sector": "Energy", "industry": "Refineries & Marketing", "market_cap": 1720000.0, "is_sme": False, "listing_date": datetime.date(1995, 11, 27), "face_value": 10.0},
-        {"symbol": "TCS", "company_name": "Tata Consultancy Services Limited", "isin": "INE467B01029", "exchange": "NSE", "sector": "Technology", "industry": "IT Software", "market_cap": 1380000.0, "is_sme": False, "listing_date": datetime.date(2004, 8, 25), "face_value": 1.0},
-        {"symbol": "HDFCBANK", "company_name": "HDFC Bank Limited", "isin": "INE040A01034", "exchange": "NSE", "sector": "Banking", "industry": "Private Bank", "market_cap": 1250000.0, "is_sme": False, "listing_date": datetime.date(1995, 5, 19), "face_value": 1.0},
-        {"symbol": "INFY", "company_name": "Infosys Limited", "isin": "INE009A01021", "exchange": "NSE", "sector": "Technology", "industry": "IT Software", "market_cap": 680000.0, "is_sme": False, "listing_date": datetime.date(1993, 6, 14), "face_value": 5.0},
-        {"symbol": "ITC", "company_name": "ITC Limited", "isin": "INE154A01025", "exchange": "NSE", "sector": "FMCG", "industry": "Tobacco Products", "market_cap": 540000.0, "is_sme": False, "listing_date": datetime.date(1995, 1, 10), "face_value": 1.0},
-        
-        # Mainboard - Mid/Small Cap
-        {"symbol": "BSE", "company_name": "BSE Limited", "isin": "INE118H01025", "exchange": "NSE", "sector": "Banking", "industry": "Financial Exchange", "market_cap": 35000.0, "is_sme": False, "listing_date": datetime.date(2017, 2, 3), "face_value": 2.0},
-        {"symbol": "TATAMOTORS", "company_name": "Tata Motors Limited", "isin": "INE155A01022", "exchange": "NSE", "sector": "Automotive", "industry": "Commercial Vehicles", "market_cap": 320000.0, "is_sme": False, "listing_date": datetime.date(1995, 7, 12), "face_value": 2.0},
-        {"symbol": "CIPLA", "company_name": "Cipla Limited", "isin": "INE059A01026", "exchange": "NSE", "sector": "Healthcare", "industry": "Pharmaceuticals", "market_cap": 115000.0, "is_sme": False, "listing_date": datetime.date(1995, 2, 8), "face_value": 2.0},
-        {"symbol": "ASTRA", "company_name": "Astra Microwave Products Limited", "isin": "INE386D01027", "exchange": "NSE", "sector": "Industrials", "industry": "Defense Electronics", "market_cap": 8500.0, "is_sme": False, "listing_date": datetime.date(2004, 11, 11), "face_value": 2.0},
+    # Load 1,030 stock universe from universe_1000.json
+    universe_path = os.path.join(os.path.dirname(__file__), "..", "data", "universe_1000.json")
+    rows = []
+    if os.path.exists(universe_path):
+        try:
+            with open(universe_path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                rows = data.get("rows", [])
+        except Exception as e:
+            print(f"Error loading universe_1000.json: {e}")
 
-        # SME Stocks
-        {"symbol": "SME_ALPHA", "company_name": "Alpha SME Solutions Limited", "isin": "INE00SME0101", "exchange": "BSE", "sector": "Technology", "industry": "IT Software", "market_cap": 450.0, "is_sme": True, "listing_date": datetime.date(2018, 5, 10), "face_value": 10.0},
-        {"symbol": "SME_BETA", "company_name": "Beta Agri Processors Limited", "isin": "INE00SME0102", "exchange": "NSE", "sector": "FMCG", "industry": "Agro Products", "market_cap": 250.0, "is_sme": True, "listing_date": datetime.date(2020, 9, 15), "face_value": 10.0},
+    sec_map = {
+        'Finance': 'Banking & Financial Services',
+        'Producer Manufacturing': 'Capital Goods & Manufacturing',
+        'Process Industries': 'Chemicals & Materials',
+        'Health Technology': 'Healthcare & Pharma',
+        'Non-Energy Minerals': 'Metals & Mining',
+        'Technology Services': 'Information Technology',
+        'Consumer Non-Durables': 'FMCG & Consumer Goods',
+        'Consumer Durables': 'Consumer Discretionary',
+        'Electronic Technology': 'Electronics & Hardware',
+        'Industrial Services': 'Industrial & Engineering',
+        'Utilities': 'Power & Utilities',
+        'Consumer Services': 'Consumer Services',
+        'Retail Trade': 'Retail & E-Commerce',
+        'Commercial Services': 'Commercial Services',
+        'Health Services': 'Hospitals & Healthcare',
+        'Energy Minerals': 'Oil, Gas & Energy',
+        'Communications': 'Telecom & Media',
+        'Transportation': 'Logistics & Transportation',
+        'Distribution Services': 'Distribution & Supply Chain'
+    }
 
-        # Delisted Stock (historical universe coverage)
-        {"symbol": "OLD_TELE", "company_name": "Telecom India Infotech Limited", "isin": "INE999T01019", "exchange": "NSE", "sector": "Technology", "industry": "Telecom Equipment", "market_cap": 0.0, "is_sme": False, "listing_date": datetime.date(2002, 3, 20), "delisting_date": datetime.date(2019, 6, 30), "is_active": False, "face_value": 10.0}
-    ]
+    # Fallback if universe file not found
+    if not rows:
+        rows = [
+            {"symbol": "RELIANCE", "name": "Reliance Industries Limited", "description": "Reliance Industries Limited", "sector": "Energy Minerals", "market_cap_basic": 17959032259459, "close": 1313.5},
+            {"symbol": "TCS", "name": "Tata Consultancy Services Limited", "description": "Tata Consultancy Services Limited", "sector": "Technology Services", "market_cap_basic": 8501419800000, "close": 2361.9},
+            {"symbol": "HDFCBANK", "name": "HDFC Bank Limited", "description": "HDFC Bank Limited", "sector": "Finance", "market_cap_basic": 11233422300000, "close": 727.7},
+            {"symbol": "INFY", "name": "Infosys Limited", "description": "Infosys Limited", "sector": "Technology Services", "market_cap_basic": 4771463000000, "close": 1169.4},
+            {"symbol": "ITC", "name": "ITC Limited", "description": "ITC Limited", "sector": "Consumer Non-Durables", "market_cap_basic": 5400000000000, "close": 435.0},
+            {"symbol": "BSE", "name": "BSE Limited", "description": "BSE Limited", "sector": "Finance", "market_cap_basic": 350000000000, "close": 2650.0},
+            {"symbol": "TATAMOTORS", "name": "Tata Motors Limited", "description": "Tata Motors Limited", "sector": "Consumer Durables", "market_cap_basic": 3200000000000, "close": 980.0},
+            {"symbol": "CIPLA", "name": "Cipla Limited", "description": "Cipla Limited", "sector": "Health Technology", "market_cap_basic": 1150000000000, "close": 1450.0},
+            {"symbol": "ASTRA", "name": "Astra Microwave Products Limited", "description": "Astra Microwave Products Limited", "sector": "Electronic Technology", "market_cap_basic": 85000000000, "close": 880.0},
+            {"symbol": "SME_ALPHA", "name": "Alpha SME Solutions Limited", "description": "Alpha SME Solutions Limited", "sector": "Technology Services", "market_cap_basic": 4500000000, "close": 420.0},
+            {"symbol": "SME_BETA", "name": "Beta Agri Processors Limited", "description": "Beta Agri Processors Limited", "sector": "Consumer Non-Durables", "market_cap_basic": 2500000000, "close": 195.0},
+            {"symbol": "OLD_TELE", "name": "Telecom India Infotech Limited", "description": "Telecom India Infotech Limited", "sector": "Communications", "market_cap_basic": 0, "close": 2.0}
+        ]
 
-    # Create Stocks
-    db_stocks = []
-    for meta in stocks_meta:
-        stock = Stock(**meta)
-        db.add(stock)
-        db_stocks.append(stock)
-    
+    # Create All Stock Objects
+    seen_syms = set()
+    all_stocks = []
+    for idx, r in enumerate(rows):
+        sym = str(r.get("symbol") or "").strip().upper()
+        if not sym or sym in seen_syms:
+            continue
+        seen_syms.add(sym)
+
+        raw_sec = r.get("sector") or "Diversified"
+        sector = sec_map.get(raw_sec, raw_sec)
+        industry = r.get("industry") or sector
+        desc = r.get("description") or r.get("name") or sym
+        mcap_basic = float(r.get("market_cap_basic") or 10000000000)
+        mcap_cr = round(mcap_basic / 10000000.0, 2)
+        is_sme = mcap_cr < 500.0 or "SME" in sym
+        listing_yr = 2000 + (idx % 15)
+        listing_dt = datetime.date(listing_yr, 1 + (idx % 12), 1 + (idx % 25))
+
+        stk = Stock(
+            symbol=sym,
+            company_name=desc,
+            isin=f"INE{len(seen_syms):05d}010{len(seen_syms)%10}",
+            exchange="NSE",
+            sector=sector,
+            industry=industry,
+            market_cap=mcap_cr,
+            is_sme=is_sme,
+            listing_date=listing_dt,
+            face_value=2.0 if not is_sme else 10.0,
+            is_active=True
+        )
+        all_stocks.append(stk)
+        db.add(stk)
+
     db.commit()
+    print(f"Created {len(all_stocks)} stocks in registry.")
 
-    # Dates Range (20 years: 2006 to 2026)
-    start_date = datetime.date(2006, 1, 1)
+    # Dates Range (12 full years: 2014 to 2026)
+    start_date = datetime.date(2014, 1, 1)
     end_date = datetime.date(2026, 8, 6)
     
-    # We will generate price observations on a weekly step (every Wednesday) to keep database sizes lean
-    # while providing 20 years of point-to-point history that is fast to calculate and load.
     date_step = datetime.timedelta(days=7)
     trading_dates = []
     curr = start_date
     while curr <= end_date:
-        # Wednesday is a standard weekday
         trading_dates.append(curr)
         curr += date_step
 
-    print(f"Generating data across {len(trading_dates)} dates for {len(db_stocks)} symbols...")
+    years = list(range(2014, 2027))
 
-    for stock in db_stocks:
-        # Baseline financials parameters for realistic generation
-        # Establish stable trend values unique to each stock
+    # Core Liquid & Sector Representative stocks for 12-year deep point-in-time time series
+    active_deep_stocks = all_stocks[:120]
+    top_syms = set(s.symbol for s in active_deep_stocks)
+    for s in all_stocks:
+        if s.symbol in ['RELIANCE', 'TCS', 'HDFCBANK', 'INFY', 'ITC', 'BSE', 'TATAMOTORS', 'CIPLA', 'ASTRA', 'SME_ALPHA', 'SME_BETA', 'OLD_TELE', 'KAYNES', 'NETWEB', 'DATA PATTERNS', 'MTAR', 'HFCL', 'CDSL', 'CAMS', 'ZOMATO', 'TRENT', 'POLYCAB', 'DIXON', 'PERSISTENT', 'COFORGE', 'TITAN', 'MARUTI', 'M&M', 'SUNPHARMA', 'BAJFINANCE', 'LT', 'SBIN', 'ICICIBANK', 'BHARTIARTL']:
+            if s.symbol not in top_syms:
+                active_deep_stocks.append(s)
+                top_syms.add(s.symbol)
+
+    print(f"Generating 12-year deep point-in-time statements & prices for {len(active_deep_stocks)} core liquid equities...")
+
+    annual_list = []
+    quarterly_list = []
+    sh_list = []
+    rq_list = []
+    fs_list = []
+    adj_prices_list = []
+
+    cmp_lookup = {r.get("symbol"): float(r.get("close") or 500.0) for r in rows if r.get("symbol")}
+
+    for stock in active_deep_stocks:
         random.seed(stock.symbol)
         
-        # Base fundamentals
-        base_sales = random.uniform(500.0, 5000.0) if not stock.is_sme else random.uniform(10.0, 50.0)
-        cagr_sales = random.uniform(0.08, 0.22)  # 8% to 22% growth
-        ebitda_margin = random.uniform(0.12, 0.32)
-        interest_rate = 0.08
-        base_debt = base_sales * random.uniform(0.1, 0.8)
-        depreciation_rate = 0.05
+        base_sales = max(50.0, stock.market_cap * random.uniform(0.3, 0.9))
+        cagr_sales = random.uniform(0.11, 0.24)
+        ebitda_margin = random.uniform(0.15, 0.36)
         tax_rate = 0.25
-
-        # Seed Financials (Annual & Quarterly)
-        annual_financials = []
-        quarterly_financials = []
-        shareholding_history = []
+        interest_rate = 0.075
+        base_debt = base_sales * random.uniform(0.05, 0.40)
+        depr_rate = 0.04
         
-        # Build history year-by-year
-        years = list(range(2005, 2027))
-        for yr in years:
-            sales_yr = base_sales * ((1.0 + cagr_sales) ** (yr - 2005))
-            # SME listing start constraint
-            if stock.listing_date.year > yr:
-                continue
-            # Delisted constraint
-            if stock.delisting_date and stock.delisting_date.year < yr:
-                continue
+        cmp = cmp_lookup.get(stock.symbol, 500.0)
+        if cmp <= 0: cmp = 500.0
+        start_price = max(5.0, cmp / ((1.19) ** 12))
+        price = start_price
+        
+        drift_by_symbol = {
+            "RELIANCE": 0.0033, "TCS": 0.0035, "HDFCBANK": 0.0032, "INFY": 0.0031,
+            "ITC": 0.0025, "TATAMOTORS": 0.0034, "CIPLA": 0.0029, "ASTRA": 0.0044,
+            "BSE": 0.0055, "SME_ALPHA": 0.0050, "SME_BETA": 0.0040, "OLD_TELE": -0.0055
+        }
+        drift = drift_by_symbol.get(stock.symbol, 0.0032)
+        vol = 0.022 if not stock.is_sme else 0.035
 
+        # 12 Years Annuals
+        for yr in years:
+            sales_yr = base_sales * ((1.0 + cagr_sales) ** (yr - 2014))
             ebitda_yr = sales_yr * ebitda_margin
-            depr_yr = sales_yr * depreciation_rate
+            depr_yr = sales_yr * depr_rate
             ebit_yr = ebitda_yr - depr_yr
-            debt_yr = base_debt * ((1.0 + cagr_sales * 0.5) ** (yr - 2005))
+            debt_yr = base_debt * ((1.0 + cagr_sales * 0.4) ** (yr - 2014))
             fin_cost_yr = debt_yr * interest_rate
             pbt_yr = ebit_yr - fin_cost_yr
             tax_yr = max(0.0, pbt_yr * tax_rate)
             pat_yr = pbt_yr - tax_yr
-            eps_yr = pat_yr / (stock.market_cap / 100.0) if stock.market_cap > 0 else pat_yr / 10.0
+            eps_yr = max(0.1, pat_yr / (stock.market_cap / 100.0))
             
-            # Balance sheet
             equity_cap = 100.0 if not stock.is_sme else 10.0
-            reserves_yr = (sales_yr * 1.5) + (pat_yr * 3)
-            fixed_assets_yr = (sales_yr * 0.8)
-            cash_yr = reserves_yr * random.uniform(0.05, 0.2)
-            inventory_yr = sales_yr * 0.12
-            receivables_yr = sales_yr * 0.10
-            payables_yr = sales_yr * 0.08
-
-            # Cash flows
-            cfo_yr = pat_yr * random.uniform(0.8, 1.2)
-            capex_yr = depr_yr * random.uniform(1.1, 1.8)
-            cfi_yr = -capex_yr
-            dividend_paid_yr = max(0.0, pat_yr * random.uniform(0.1, 0.4))
-            cff_yr = -dividend_paid_yr + (debt_yr * 0.05)
+            reserves_yr = sales_yr * 1.5 + pat_yr * 4.0
+            fixed_assets_yr = sales_yr * 0.75
+            cash_yr = reserves_yr * random.uniform(0.08, 0.25)
+            cfo_yr = pat_yr * random.uniform(0.85, 1.25)
+            capex_yr = depr_yr * random.uniform(1.1, 1.6)
             fcf_yr = cfo_yr - capex_yr
-
-            period_end_yr = datetime.date(yr, 3, 31)
-            # Publication date (usually 2-3 months after fiscal year end)
-            pub_date_yr = datetime.date(yr, 6, 30)
-
-            # Save Annual Record
+            div_yr = max(0.0, pat_yr * random.uniform(0.15, 0.35))
+            
+            p_end_yr = datetime.date(yr, 3, 31)
+            pub_date = datetime.date(yr, 6, 30)
+            
             fa = FinancialAnnual(
-                stock_id=stock.id,
-                date=period_end_yr,
-                period_end=period_end_yr,
-                publication_date=pub_date_yr,
-                sales=round(sales_yr, 2),
-                ebitda=round(ebitda_yr, 2),
-                depreciation=round(depr_yr, 2),
-                ebit=round(ebit_yr, 2),
-                finance_cost=round(fin_cost_yr, 2),
-                pbt=round(pbt_yr, 2),
-                tax=round(tax_yr, 2),
-                pat=round(pat_yr, 2),
-                eps=round(eps_yr, 2),
-                equity_share_capital=round(equity_cap, 2),
-                reserves=round(reserves_yr, 2),
-                total_debt=round(debt_yr, 2),
-                short_term_borrowings=round(debt_yr * 0.2, 2),
-                long_term_borrowings=round(debt_yr * 0.8, 2),
-                cash_equivalents=round(cash_yr, 2),
-                fixed_assets=round(fixed_assets_yr, 2),
-                cwip=round(fixed_assets_yr * 0.05, 2),
-                investments=round(reserves_yr * 0.1, 2),
-                inventory=round(inventory_yr, 2),
-                receivables=round(receivables_yr, 2),
-                payables=round(payables_yr, 2),
-                operating_cash_flow=round(cfo_yr, 2),
-                investing_cash_flow=round(cfi_yr, 2),
-                financing_cash_flow=round(cff_yr, 2),
-                free_cash_flow=round(fcf_yr, 2),
-                capex=round(capex_yr, 2),
-                dividend_paid=round(dividend_paid_yr, 2)
+                stock_id=stock.id, date=p_end_yr, period_end=p_end_yr, publication_date=pub_date,
+                sales=round(sales_yr, 2), ebitda=round(ebitda_yr, 2), depreciation=round(depr_yr, 2),
+                ebit=round(ebit_yr, 2), finance_cost=round(fin_cost_yr, 2), pbt=round(pbt_yr, 2),
+                tax=round(tax_yr, 2), pat=round(pat_yr, 2), eps=round(eps_yr, 2),
+                equity_share_capital=round(equity_cap, 2), reserves=round(reserves_yr, 2),
+                total_debt=round(debt_yr, 2), short_term_borrowings=round(debt_yr * 0.2, 2),
+                long_term_borrowings=round(debt_yr * 0.8, 2), cash_equivalents=round(cash_yr, 2),
+                fixed_assets=round(fixed_assets_yr, 2), cwip=round(fixed_assets_yr * 0.05, 2),
+                investments=round(reserves_yr * 0.1, 2), inventory=round(sales_yr * 0.12, 2),
+                receivables=round(sales_yr * 0.10, 2), payables=round(sales_yr * 0.08, 2),
+                operating_cash_flow=round(cfo_yr, 2), investing_cash_flow=round(-capex_yr, 2),
+                financing_cash_flow=round(-div_yr + debt_yr * 0.05, 2), free_cash_flow=round(fcf_yr, 2),
+                capex=round(capex_yr, 2), dividend_paid=round(div_yr, 2)
             )
-            annual_financials.append(fa)
-            db.add(fa)
-
-            # Generate 4 Quarters for this year
+            annual_list.append(fa)
+            
+            # 4 Quarters per Year
             for q in range(1, 5):
-                if q == 1:
-                    period_end_q = datetime.date(yr, 6, 30)
-                elif q == 2:
-                    period_end_q = datetime.date(yr, 9, 30)
-                elif q == 3:
-                    period_end_q = datetime.date(yr, 12, 31)
-                else:
-                    period_end_q = datetime.date(yr + 1, 3, 31)
+                if q == 1: p_end_q = datetime.date(yr, 6, 30)
+                elif q == 2: p_end_q = datetime.date(yr, 9, 30)
+                elif q == 3: p_end_q = datetime.date(yr, 12, 31)
+                else: p_end_q = datetime.date(yr + 1, 3, 31)
                 
-                # Quarterly split: roughly 22-28% of annual sales
-                sales_q = sales_yr * random.uniform(0.22, 0.28)
+                sales_q = sales_yr * random.uniform(0.23, 0.27)
                 ebitda_q = sales_q * ebitda_margin
                 depr_q = depr_yr / 4.0
                 ebit_q = ebitda_q - depr_q
@@ -184,392 +222,116 @@ def generate_mock_data(db: Session):
                 tax_q = max(0.0, pbt_q * tax_rate)
                 pat_q = pbt_q - tax_q
                 eps_q = eps_yr / 4.0
-
-                # Announcement lag: 30 days after quarter end
-                announce_date_q = period_end_q + datetime.timedelta(days=30)
-
+                ann_date = p_end_q + datetime.timedelta(days=30)
+                
                 fq = FinancialQuarterly(
-                    stock_id=stock.id,
-                    date=period_end_q,
-                    period_end=period_end_q,
-                    announcement_date=announce_date_q,
-                    sales=round(sales_q, 2),
-                    raw_materials=round(sales_q * 0.35, 2),
-                    employee_cost=round(sales_q * 0.15, 2),
-                    other_expenses=round(sales_q * 0.20, 2),
-                    ebitda=round(ebitda_q, 2),
-                    depreciation=round(depr_q, 2),
-                    ebit=round(ebit_q, 2),
-                    finance_cost=round(fin_cost_q, 2),
-                    pbt=round(pbt_q, 2),
-                    tax=round(tax_q, 2),
-                    pat=round(pat_q, 2),
-                    eps=round(eps_q, 2)
+                    stock_id=stock.id, date=p_end_q, period_end=p_end_q, announcement_date=ann_date,
+                    sales=round(sales_q, 2), raw_materials=round(sales_q * 0.35, 2),
+                    employee_cost=round(sales_q * 0.15, 2), other_expenses=round(sales_q * 0.20, 2),
+                    ebitda=round(ebitda_q, 2), depreciation=round(depr_q, 2), ebit=round(ebit_q, 2),
+                    finance_cost=round(fin_cost_q, 2), pbt=round(pbt_q, 2), tax=round(tax_q, 2),
+                    pat=round(pat_q, 2), eps=round(eps_q, 2)
                 )
-                quarterly_financials.append(fq)
-                db.add(fq)
+                quarterly_list.append(fq)
+                
+                # Quarterly Ratios & Forensics
+                tot_equity = equity_cap + reserves_yr
+                tot_capital = tot_equity + debt_yr
+                roce_val = round((ebit_yr / tot_capital) * 100.0, 2)
+                roe_val = round((pat_yr / tot_equity) * 100.0, 2)
+                de_val = round(debt_yr / tot_equity, 2)
+                rq = RatiosQuarterly(
+                    stock_id=stock.id, date=p_end_q, roce=roce_val, roe=roe_val,
+                    debt_equity=de_val, interest_coverage=round(ebit_yr / max(1.0, fin_cost_yr), 2),
+                    ebitda_margin=round(ebitda_margin * 100.0, 2), pat_margin=round((pat_yr / sales_yr) * 100.0, 2),
+                    piotroski_f_score=random.choice([6, 7, 8, 9]) if roce_val > 15 else random.choice([4, 5, 6]),
+                    piotroski_f_score_9=random.choice([7, 8, 9]) if roce_val > 15 else random.choice([5, 6, 7]),
+                    altman_z_score=round(random.uniform(3.2, 7.5), 2),
+                    beneish_m_score=round(random.uniform(-3.5, -2.4), 2),
+                    sloan_accruals_ratio=round(random.uniform(-0.08, 0.04), 3),
+                    sales_cagr_3y=round(cagr_sales * 100.0, 2), pat_cagr_3y=round(cagr_sales * 105.0, 2)
+                )
+                rq_list.append(rq)
 
-            # Shareholding pattern per year
+            # Shareholding
+            prom_p = round(random.uniform(50.0, 72.0), 2)
+            fii_p = round(random.uniform(8.0, 24.0), 2)
+            dii_p = round(random.uniform(10.0, 22.0), 2)
+            pub_p = round(max(0.0, 100.0 - (prom_p + fii_p + dii_p)), 2)
             sh = ShareholdingPattern(
-                stock_id=stock.id,
-                date=datetime.date(yr, 12, 31),
-                promoter_pct=round(random.uniform(45.0, 72.0), 2),
-                fii_pct=round(random.uniform(5.0, 22.0), 2),
-                dii_pct=round(random.uniform(8.0, 25.0), 2),
-                public_pct=0.0, # Will compute below
-                pledged_promoter_pct=round(random.uniform(0.0, 8.0) if yr % 3 == 0 else 0.0, 2),
-                mutual_fund_pct=round(random.uniform(2.0, 10.0), 2)
+                stock_id=stock.id, date=datetime.date(yr, 12, 31),
+                promoter_pct=prom_p, fii_pct=fii_p, dii_pct=dii_p, public_pct=pub_p,
+                pledged_promoter_pct=0.0 if stock.market_cap > 50000 else round(random.uniform(0.0, 4.0), 2)
             )
-            sh.public_pct = round(100.0 - (sh.promoter_pct + sh.fii_pct + sh.dii_pct), 2)
-            shareholding_history.append(sh)
-            db.add(sh)
+            sh_list.append(sh)
 
-        # Let's add corporate actions:
-        # A split on RELIANCE in 2017-09-05 (1:2 ratio)
-        # A bonus on TCS in 2018-06-01 (1:1 ratio, meaning 1 additional share for every 1 owned)
-        actions = []
-        if stock.symbol == "RELIANCE":
-            actions.append(CorporateAction(
-                stock_id=stock.id,
-                date=datetime.date(2017, 9, 5),
-                type="Split",
-                ratio_from=1.0,
-                ratio_to=2.0,
-                description="Face value split from ₹10 to ₹5"
-            ))
-        elif stock.symbol == "TCS":
-            actions.append(CorporateAction(
-                stock_id=stock.id,
-                date=datetime.date(2018, 6, 1),
-                type="Bonus",
-                ratio_from=1.0,
-                ratio_to=2.0,
-                description="Bonus issue 1:1"
-            ))
-        
-        # Add some regular dividends
-        for yr in years:
-            if stock.listing_date.year <= yr and (not stock.delisting_date or stock.delisting_date.year >= yr):
-                actions.append(CorporateAction(
-                    stock_id=stock.id,
-                    date=datetime.date(yr, 8, 15),
-                    type="Dividend",
-                    dividend_amount=round(random.uniform(2.0, 20.0), 2),
-                    description=f"Annual Dividend FY{yr}"
-                ))
-
-        for act in actions:
-            db.add(act)
-
-        # Generate Price Observations
-        # Starting base price calibrated to historical Indian bluechip levels
-        base_price = 100.0
-        if stock.symbol == "RELIANCE":
-            base_price = 120.0
-        elif stock.symbol == "TCS":
-            base_price = 180.0
-        elif stock.symbol == "HDFCBANK":
-            base_price = 110.0
-        elif stock.symbol == "INFY":
-            base_price = 140.0
-        elif stock.symbol == "ITC":
-            base_price = 65.0
-        elif stock.symbol == "TATAMOTORS":
-            base_price = 90.0
-        elif stock.symbol == "CIPLA":
-            base_price = 130.0
-        elif stock.symbol == "ASTRA":
-            base_price = 35.0
-        elif stock.symbol == "BSE":
-            base_price = 150.0
-        elif stock.symbol == "SME_ALPHA":
-            base_price = 45.0
-        elif stock.symbol == "SME_BETA":
-            base_price = 30.0
-        elif stock.symbol == "OLD_TELE":
-            base_price = 80.0
-
-        daily_prices_batch = []
-        adj_prices_batch = []
-        ratios_daily_batch = []
-        factor_scores_batch = []
-        ratios_quarterly_batch = []
-
-        price = base_price
-        
-        drift_by_symbol = {
-            "RELIANCE": 0.0032,
-            "TCS": 0.0034,
-            "HDFCBANK": 0.0031,
-            "INFY": 0.0030,
-            "ITC": 0.0024,
-            "TATAMOTORS": 0.0033,
-            "CIPLA": 0.0028,
-            "ASTRA": 0.0042,
-            "BSE": 0.0055,
-            "SME_ALPHA": 0.0050,
-            "SME_BETA": 0.0040,
-            "OLD_TELE": -0.0055
-        }
-        
-        # Compute adjustment multiplier tracking
-        action_multipliers = [] # list of (date, multiplier)
-        for act in actions:
-            if act.type in ["Split", "Bonus"]:
-                action_multipliers.append((act.date, act.ratio_to / act.ratio_from))
-
-        drift = drift_by_symbol.get(stock.symbol, 0.0030)
-        vol = 0.022 if not stock.is_sme else 0.035
-
+        # 12 Years Weekly Prices
         for dt in trading_dates:
-            # Check listing constraints
-            if dt < stock.listing_date:
-                continue
-            if stock.delisting_date and dt > stock.delisting_date:
-                continue
-
-            # Random walk price step with positive economic drift
             price = price * (1.0 + random.normalvariate(drift, vol))
             price = max(1.0, round(price, 2))
-
-            # Apply splits/bonuses to compute "adjusted_price"
-            # Cumulative multiplier = product of all future action multipliers
-            # (since actions affect past prices)
-            cum_factor = 1.0
-            for act_date, mult in action_multipliers:
-                if dt < act_date:
-                    cum_factor /= mult
-
-            adj_close = round(price * cum_factor, 2)
-            adj_open = round(price * cum_factor * random.uniform(0.98, 1.02), 2)
-            adj_high = round(max(adj_open, adj_close) * random.uniform(1.0, 1.03), 2)
-            adj_low = round(min(adj_open, adj_close) * random.uniform(0.97, 1.0), 2)
-
-            raw_open = round(price * random.uniform(0.98, 1.02), 2)
-            raw_high = round(max(raw_open, price) * random.uniform(1.0, 1.03), 2)
-            raw_low = round(min(raw_open, price) * random.uniform(0.97, 1.0), 2)
-
-            vol_val = int(random.uniform(50000, 1500000) if not stock.is_sme else random.uniform(500, 15000))
-            del_vol = int(vol_val * random.uniform(0.35, 0.75))
-            del_pct = round((del_vol / vol_val) * 100.0, 2)
-            turnover_val = round((price * vol_val) / 100000.0, 2) # in ₹ Lakhs
-
-            # Create price records
-            daily_prices_batch.append(DailyPrice(
-                stock_id=stock.id,
-                date=dt,
-                open=raw_open,
-                high=raw_high,
-                low=raw_low,
+            
+            ap = AdjustedPrice(
+                stock_id=stock.id, date=dt,
+                open=round(price * random.uniform(0.98, 1.02), 2),
+                high=round(price * random.uniform(1.0, 1.03), 2),
+                low=round(price * random.uniform(0.97, 1.0), 2),
                 close=price,
-                volume=float(vol_val),
-                delivery_volume=float(del_vol),
-                delivery_pct=del_pct,
-                turnover=turnover_val,
-                vwap=round((raw_open + raw_high + raw_low + price) / 4.0, 2)
-            ))
-
-            adj_prices_batch.append(AdjustedPrice(
-                stock_id=stock.id,
-                date=dt,
-                open=adj_open,
-                high=adj_high,
-                low=adj_low,
-                close=adj_close,
-                volume=float(vol_val * (1.0 / cum_factor)),
-                vwap=round((adj_open + adj_high + adj_low + adj_close) / 4.0, 2),
-                adjustment_factor=cum_factor
-            ))
-
-            # Ratios daily (PE, PB, EV/Sales, FCF yield)
-            # Find the latest available financial statement based on point-in-time
-            # i.e., publication/announcement date must be <= dt
-            active_annual = None
-            for fa in annual_financials:
-                if fa.publication_date <= dt:
-                    if active_annual is None or fa.date > active_annual.date:
-                        active_annual = fa
-            
-            active_quarterly = None
-            for fq in quarterly_financials:
-                if fq.announcement_date <= dt:
-                    if active_quarterly is None or fq.date > active_quarterly.date:
-                        active_quarterly = fq
-
-            # Compute daily ratios
-            pe_val = None
-            pb_val = None
-            ev_ebitda_val = None
-            fcf_yield_val = None
-            dividend_yield_val = None
-
-            if active_annual:
-                eps_ann = active_annual.eps
-                pe_val = round(price / eps_ann, 2) if eps_ann and eps_ann > 0 else None
-                
-                book_val = (active_annual.equity_share_capital + active_annual.reserves) / (stock.market_cap / 100.0) if stock.market_cap > 0 else 10.0
-                pb_val = round(price / book_val, 2) if book_val > 0 else None
-                
-                # EV = Market Cap + Debt - Cash
-                mcap_dt = (price * (stock.market_cap / 10.0)) / 1000.0 # simple proxy
-                ev = mcap_dt + active_annual.total_debt - active_annual.cash_equivalents
-                ev_ebitda_val = round(ev / active_annual.ebitda, 2) if active_annual.ebitda and active_annual.ebitda > 0 else None
-                
-                fcf_yield_val = round((active_annual.free_cash_flow / mcap_dt) * 100.0, 2) if mcap_dt > 0 else None
-                dividend_yield_val = round((active_annual.dividend_paid / mcap_dt) * 100.0, 2) if mcap_dt > 0 else None
-
-            ratios_daily_batch.append(RatiosDaily(
-                stock_id=stock.id,
-                date=dt,
-                pe=pe_val,
-                pb=pb_val,
-                ev_ebitda=ev_ebitda_val,
-                ev_sales=round(ev / active_annual.sales, 2) if active_annual and active_annual.sales and ev else None,
-                mc_sales=round(stock.market_cap / active_annual.sales, 2) if active_annual and active_annual.sales else None,
-                price_cfo=round(price / (active_annual.operating_cash_flow / 10.0), 2) if active_annual and active_annual.operating_cash_flow and active_annual.operating_cash_flow > 0 else None,
-                price_fcf=round(price / (active_annual.free_cash_flow / 10.0), 2) if active_annual and active_annual.free_cash_flow and active_annual.free_cash_flow > 0 else None,
-                dividend_yield=dividend_yield_val,
-                fcf_yield=fcf_yield_val
-            ))
-
-            # Compute Quarterly Ratios (ROE, ROCE, Debt/Equity, Margins)
-            roce_base = 24.0 if stock.symbol in ["TCS", "INFY", "HDFCBANK", "RELIANCE"] else 14.0
-            roce_val = round(roce_base + random.uniform(-3.0, 5.0), 2)
-            roe_val = round(roce_val * 0.85, 2)
-            debt_eq_val = round(random.uniform(0.1, 0.4) if not stock.is_sme else random.uniform(0.3, 0.8), 2)
-            ebitda_margin_val = round(ebitda_margin * 100.0, 2)
-
-            ratios_quarterly_batch.append(RatiosQuarterly(
-                stock_id=stock.id,
-                date=dt,
-                roe=roe_val,
-                roce=roce_val,
-                roa=round(roe_val * 0.6, 2),
-                ebitda_margin=ebitda_margin_val,
-                pat_margin=round((active_annual.pat / active_annual.sales) * 100.0, 2) if active_annual and active_annual.sales else None,
-                debt_equity=debt_eq_val,
-                interest_coverage=round(active_annual.ebit / active_annual.finance_cost, 2) if active_annual and active_annual.finance_cost and active_annual.finance_cost > 0 else None,
-                current_ratio=round((cash_yr + inventory_yr + receivables_yr) / payables_yr, 2) if payables_yr > 0 else None,
-                quick_ratio=round((cash_yr + receivables_yr) / payables_yr, 2) if payables_yr > 0 else None,
-                sales_cagr_3y=round(cagr_sales * 100.0, 2), # proxy
-                pat_cagr_3y=round(cagr_sales * 100.0 * 1.1, 2), # proxy
-                working_capital=round(inventory_yr + receivables_yr - payables_yr, 2)
-            ))
-
-            # Factor scores (Quality, Growth, Value, Momentum, Risk, Ownership, Governance, Composite)
-            # Make momentum fluctuate dynamically based on random walk return,
-            # and other metrics stable
-            mom_score = round(50.0 + random.uniform(-15.0, 35.0) + (price / base_price - 1.0) * 10.0, 2)
-            mom_score = max(0.0, min(100.0, mom_score))
-
-            qual_score = round(60.0 + (roce_val if roce_val else 10.0) * 0.8 - (debt_eq_val if debt_eq_val else 0.5) * 5.0, 2)
-            qual_score = max(0.0, min(100.0, qual_score))
-
-            gro_score = round(40.0 + cagr_sales * 200.0 + random.uniform(-5.0, 10.0), 2)
-            gro_score = max(0.0, min(100.0, gro_score))
-
-            val_score = round(100.0 - (pe_val if pe_val else 25.0) * 0.8, 2)
-            val_score = max(0.0, min(100.0, val_score))
-
-            risk_score = round(30.0 + (debt_eq_val if debt_eq_val else 0.5) * 20.0, 2) # lower is better risk, wait! "Risk Score: Volatility, drawdown, debt, pledge, liquidity". Let's say higher score is higher health (lower risk).
-            risk_score = max(0.0, min(100.0, risk_score))
-
-            own_score = round(50.0 + random.uniform(-10.0, 10.0), 2)
-            gov_score = 95.0 if not stock.symbol == "OLD_TELE" else 40.0 # Governance issues for delisted stock
-            
-            comp_score = round(
-                0.30 * qual_score +
-                0.25 * gro_score +
-                0.15 * val_score +
-                0.20 * mom_score +
-                0.10 * risk_score, 2
+                volume=int(random.uniform(50000, 1500000) if not stock.is_sme else random.uniform(2000, 25000))
             )
+            adj_prices_list.append(ap)
+            
+            # Factor Scores
+            q_score = round(random.uniform(65.0, 95.0), 1)
+            g_score = round(random.uniform(60.0, 92.0), 1)
+            v_score = round(random.uniform(45.0, 85.0), 1)
+            m_score = round(random.uniform(55.0, 94.0), 1)
+            comp = round(0.35 * q_score + 0.25 * g_score + 0.15 * v_score + 0.25 * m_score, 1)
+            
+            fs = FactorScores(
+                stock_id=stock.id, date=dt,
+                quality=q_score, growth=g_score, value=v_score,
+                momentum=m_score, risk=round(random.uniform(10.0, 35.0), 1),
+                composite=comp
+            )
+            fs_list.append(fs)
 
-            factor_scores_batch.append(FactorScores(
-                stock_id=stock.id,
-                date=dt,
-                quality=qual_score,
-                growth=gro_score,
-                value=val_score,
-                momentum=mom_score,
-                risk=risk_score,
-                ownership=own_score,
-                governance=gov_score,
-                composite=comp_score
-            ))
-
-        db.bulk_save_objects(daily_prices_batch)
-        db.bulk_save_objects(adj_prices_batch)
-        db.bulk_save_objects(ratios_daily_batch)
-        db.bulk_save_objects(ratios_quarterly_batch)
-        db.bulk_save_objects(factor_scores_batch)
-
-        db.commit()
-        print(f"Generated complete point-in-time data for {stock.symbol}.")
-
-    # Add Default Screens & Strategies
-    s1 = Screen(
-        name="Quality ROCE Compounders",
-        description="Companies with ROCE > 18%, low debt, and positive growth.",
-        formula_json={
-            "rules": [
-                {"field": "roce", "op": ">", "val": 18},
-                {"field": "debt_equity", "op": "<", "val": 0.75},
-                {"field": "sales_cagr_3y", "op": ">", "val": 12}
-            ]
-        }
-    )
-    db.add(s1)
-
-    s2 = Screen(
-        name="Value Buy-backs & Dividends",
-        description="Low PE ratios and strong dividend yields.",
-        formula_json={
-            "rules": [
-                {"field": "pe", "op": "<", "val": 25},
-                {"field": "dividend_yield", "op": ">", "val": 2.0}
-            ]
-        }
-    )
-    db.add(s2)
-
-    default_strat = Strategy(
-        name="Quality Growth Momentum India",
-        description="The default flagship Indian equity quant model: Top 25 stocks ranked by composite score with strict exits.",
-        config_json={
-            "universe": {
-                "min_market_cap": 500.0,  # ₹500 Crores
-                "exclude_financials": False,
-                "exclude_psus": False,
-                "sme_allowed": True
-            },
-            "filters": [
-                {"field": "roce", "op": ">", "val": 18.0},
-                {"field": "sales_cagr_3y", "op": ">", "val": 12.0},
-                {"field": "pat_cagr_3y", "op": ">", "val": 15.0},
-                {"field": "debt_equity", "op": "<", "val": 0.75}
-            ],
-            "ranking": {
-                "quality": 30,
-                "growth": 25,
-                "value": 15,
-                "momentum": 20,
-                "risk": 10
-            },
-            "portfolio": {
-                "max_holdings": 25,
-                "weight_type": "equal",
-                "max_sector_exposure": 25.0,  # 25% max sector weight
-                "rebalance_freq": "quarterly",
-                "transaction_cost": 0.0025,   # 0.25%
-                "slippage": 0.0025            # 0.25%
-            },
-            "exits": [
-                {"field": "roce", "op": "<", "val": 12.0},
-                {"field": "debt_equity", "op": ">", "val": 1.25}
-            ]
-        }
-    )
-    db.add(default_strat)
+    print(f"Bulk saving {len(annual_list):,} annuals, {len(quarterly_list):,} quarterlies, {len(adj_prices_list):,} prices...")
+    db.bulk_save_objects(annual_list)
+    db.bulk_save_objects(quarterly_list)
+    db.bulk_save_objects(sh_list)
+    db.bulk_save_objects(rq_list)
+    db.bulk_save_objects(fs_list)
+    db.bulk_save_objects(adj_prices_list)
     db.commit()
-    print("Database seeding completed successfully!")
+
+    # Seed Predefined Institutional Screens
+    screens = [
+        Screen(
+            name="Institutional Quality-Momentum (IQM-30)",
+            description="Filters top 30 liquid leaders combining ROCE > 15%, Piotroski F-score >= 6, and price above 200 DMA.",
+            formula_json={
+                "rules": [
+                    {"field": "roce", "op": ">=", "val": "15.0"},
+                    {"field": "piotroski_f_score", "op": ">=", "val": "6"},
+                    {"field": "price_above_dma200", "op": "==", "val": "1"}
+                ],
+                "universe": {"min_market_cap": 500, "sme_allowed": False}
+            }
+        ),
+        Screen(
+            name="Forensic Quality Compounder",
+            description="Detects strong balance sheets with zero promoter pledge, low debt/equity (< 0.5), and ROCE >= 16%.",
+            formula_json={
+                "rules": [
+                    {"field": "debt_equity", "op": "<=", "val": "0.5"},
+                    {"field": "roce", "op": ">=", "val": "16.0"}
+                ],
+                "universe": {"min_market_cap": 500, "sme_allowed": False}
+            }
+        )
+    ]
+    for sc in screens:
+        db.add(sc)
+
+    db.commit()
+    print("Database seeding completed successfully for 1,030 stocks universe!")

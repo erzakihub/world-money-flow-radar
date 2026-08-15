@@ -1850,12 +1850,22 @@ def get_market_breadth_api(db: Session = Depends(get_db)):
 @app.get("/api/stocks")
 def get_stocks_list(db: Session = Depends(get_db)):
     stocks = db.query(Stock).filter(Stock.is_active == True).all()
-    # Batch fetch latest factor scores
-    factors = db.query(FactorScores).all()
+    # Efficiently fetch latest factor scores
+    latest_factors = db.query(
+        FactorScores.stock_id,
+        FactorScores.composite,
+        FactorScores.quality,
+        FactorScores.growth,
+        FactorScores.value,
+        FactorScores.momentum
+    ).order_by(FactorScores.date.desc()).all()
+    
     factors_by_stock = {}
-    for f in factors:
-        if f.stock_id not in factors_by_stock:
-            factors_by_stock[f.stock_id] = f
+    for sid, comp, q, g, v, m in latest_factors:
+        if sid not in factors_by_stock:
+            factors_by_stock[sid] = {
+                "composite": comp, "quality": q, "growth": g, "value": v, "momentum": m
+            }
             
     res = []
     for s in stocks:
@@ -1869,11 +1879,11 @@ def get_stocks_list(db: Session = Depends(get_db)):
             "market_cap": round(float(s.market_cap or 0.0), 2),
             "is_sme": getattr(s, "is_sme", False),
             "is_active": s.is_active,
-            "composite_score": round(float(f.composite), 1) if f and f.composite is not None else 65.0,
-            "quality_score": round(float(f.quality), 1) if f and f.quality is not None else 60.0,
-            "growth_score": round(float(f.growth), 1) if f and f.growth is not None else 60.0,
-            "value_score": round(float(f.value), 1) if f and f.value is not None else 60.0,
-            "momentum_score": round(float(f.momentum), 1) if f and f.momentum is not None else 60.0
+            "composite_score": round(float(f["composite"]), 1) if f and f["composite"] is not None else 65.0,
+            "quality_score": round(float(f["quality"]), 1) if f and f["quality"] is not None else 60.0,
+            "growth_score": round(float(f["growth"]), 1) if f and f["growth"] is not None else 60.0,
+            "value_score": round(float(f["value"]), 1) if f and f["value"] is not None else 60.0,
+            "momentum_score": round(float(f["momentum"]), 1) if f and f["momentum"] is not None else 60.0
         })
     return res
 
