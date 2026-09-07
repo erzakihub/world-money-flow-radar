@@ -8,7 +8,7 @@ from ..models import (
     Stock, DailyPrice, AdjustedPrice, CorporateAction,
     FinancialQuarterly, FinancialAnnual, RatiosDaily,
     RatiosQuarterly, ShareholdingPattern, FactorScores,
-    Screen, Strategy
+    Screen, Strategy, EarningsCalendar
 )
 
 def generate_mock_data(db: Session):
@@ -107,9 +107,9 @@ def generate_mock_data(db: Session):
     db.commit()
     print(f"Created {len(all_stocks)} stocks in registry.")
 
-    # Dates Range (12 full years: 2014 to 2026)
+    # Dates Range (12 full years: 2014 to present day)
     start_date = datetime.date(2014, 1, 1)
-    end_date = datetime.date(2026, 8, 6)
+    end_date = datetime.date.today()
     
     date_step = datetime.timedelta(days=7)
     trading_dates = []
@@ -118,7 +118,7 @@ def generate_mock_data(db: Session):
         trading_dates.append(curr)
         curr += date_step
 
-    years = list(range(2014, 2027))
+    years = list(range(2014, end_date.year + 1))
 
     # Core Liquid & Sector Representative stocks for 12-year deep point-in-time time series
     active_deep_stocks = all_stocks[:120]
@@ -212,6 +212,9 @@ def generate_mock_data(db: Session):
                 elif q == 2: p_end_q = datetime.date(yr, 9, 30)
                 elif q == 3: p_end_q = datetime.date(yr, 12, 31)
                 else: p_end_q = datetime.date(yr + 1, 3, 31)
+                
+                if p_end_q > end_date:
+                    continue
                 
                 sales_q = sales_yr * random.uniform(0.23, 0.27)
                 ebitda_q = sales_q * ebitda_margin
@@ -333,5 +336,81 @@ def generate_mock_data(db: Session):
     for sc in screens:
         db.add(sc)
 
+    # Seed Upcoming & Recent Earnings Calendar entries around current date
+    today = datetime.date.today()
+    calendar_entries = []
+    focus_stocks = active_deep_stocks[:60]
+    
+    for idx, st in enumerate(focus_stocks):
+        # Stagger across 4 temporal buckets:
+        # 0..4: Declared Today
+        # 5..19: This Week (next 1 to 6 days)
+        # 20..44: Next 30 Days (upcoming 7 to 30 days)
+        # 45..59: Recent Q1 Declared (past 1 to 20 days)
+        if idx < 5:
+            ev_date = today
+            status = "Declared Today"
+            quarter_period = "Q1 FY27"
+            actual_eps = round(random.uniform(14.0, 48.0), 2)
+            consensus_eps = round(actual_eps * random.uniform(0.92, 1.05), 2)
+            surprise = round(((actual_eps - consensus_eps) / consensus_eps) * 100.0, 2)
+            price_rx = round(surprise * 0.4 + random.uniform(-0.8, 1.2), 2)
+            actual_sales = round(st.market_cap * random.uniform(0.08, 0.18), 2)
+            cons_sales = round(actual_sales * (1.0 - surprise * 0.005), 2)
+        elif idx < 20:
+            days_ahead = (idx - 4) % 6 + 1
+            ev_date = today + datetime.timedelta(days=days_ahead)
+            status = "Upcoming"
+            quarter_period = "Q2 FY27"
+            actual_eps = None
+            actual_sales = None
+            consensus_eps = round(random.uniform(10.0, 42.0), 2)
+            cons_sales = round(st.market_cap * random.uniform(0.08, 0.16), 2)
+            surprise = None
+            price_rx = None
+        elif idx < 45:
+            days_ahead = 7 + (idx - 19)
+            ev_date = today + datetime.timedelta(days=days_ahead)
+            status = "Upcoming"
+            quarter_period = "Q2 FY27"
+            actual_eps = None
+            actual_sales = None
+            consensus_eps = round(random.uniform(8.0, 38.0), 2)
+            cons_sales = round(st.market_cap * random.uniform(0.07, 0.15), 2)
+            surprise = None
+            price_rx = None
+        else:
+            days_ago = (idx - 44) * 2 + 1
+            ev_date = today - datetime.timedelta(days=days_ago)
+            status = "Post-Results"
+            quarter_period = "Q1 FY27"
+            actual_eps = round(random.uniform(10.0, 40.0), 2)
+            consensus_eps = round(actual_eps * random.uniform(0.88, 1.10), 2)
+            surprise = round(((actual_eps - consensus_eps) / consensus_eps) * 100.0, 2)
+            price_rx = round(surprise * 0.5 + random.uniform(-1.0, 1.5), 2)
+            actual_sales = round(st.market_cap * random.uniform(0.08, 0.18), 2)
+            cons_sales = round(actual_sales * (1.0 - surprise * 0.005), 2)
+            
+        ec = EarningsCalendar(
+            stock_id=st.id,
+            symbol=st.symbol,
+            company_name=st.company_name,
+            sector=st.sector,
+            board_meeting_date=ev_date,
+            quarter_period=quarter_period,
+            purpose="Financial Results & Dividend Announcement",
+            status=status,
+            consensus_eps_est=consensus_eps,
+            consensus_sales_est=cons_sales,
+            actual_eps=actual_eps,
+            actual_sales=actual_sales,
+            prior_pat_yoy_pct=round(random.uniform(12.0, 35.0), 1),
+            surprise_pct=surprise,
+            price_reaction_pct=price_rx
+        )
+        calendar_entries.append(ec)
+        
+    db.bulk_save_objects(calendar_entries)
     db.commit()
-    print("Database seeding completed successfully for 1,030 stocks universe!")
+    print(f"Database seeding completed successfully: 1,030 stocks, {len(calendar_entries)} earnings events!")
+

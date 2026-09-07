@@ -21,7 +21,8 @@ import {
   BookOpen,
   PieChart,
   Search,
-  Grid
+  Grid,
+  Calendar
 } from "lucide-react";
 
 interface SidebarProps {
@@ -50,6 +51,7 @@ const MACRO_ITEMS = [
 
 const QUANT_ITEMS = [
   { id: "dashboard", label: "Market Overview", icon: LayoutDashboard, desc: "NSE/BSE Breadth & Regime" },
+  { id: "earnings-calendar", label: "Earnings Calendar", icon: Calendar, desc: "Upcoming Results Radar" },
   { id: "stock-universe", label: "Stock Universe", icon: Grid, desc: "1,500+ Listed Equities" },
   { id: "screener", label: "Quant Screener", icon: Search, desc: "Custom Query Rules" },
   { id: "strategy-builder", label: "Strategy Builder", icon: Sliders, desc: "Point-in-Time Backtester" },

@@ -23,6 +23,7 @@ export default function CommandCentre() {
   const [dashboardData, setDashboardData] = useState<any>(null);
   const [bullPockets, setBullPockets] = useState<any[]>([]);
   const [liquidityDrains, setLiquidityDrains] = useState<any[]>([]);
+  const [netLiquidity, setNetLiquidity] = useState<any>(null);
   
   const [loading, setLoading] = useState(true);
   const [selectedSign, setSelectedSign] = useState<any>(null);
@@ -32,17 +33,19 @@ export default function CommandCentre() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [signsRes, dbRes, assetsRes, drainRes] = await Promise.all([
+      const [signsRes, dbRes, assetsRes, drainRes, netLiqRes] = await Promise.all([
         fetch("/api/money-flow-signs").then(r => r.json()),
         fetch("/api/dashboard/command-centre").then(r => r.json()),
         fetch("/api/flow-pulse/assets").then(r => r.json()),
-        fetch("/api/liquidity-drain/global").then(r => r.json())
+        fetch("/api/liquidity-drain/global").then(r => r.json()),
+        fetch("/api/macro/net-liquidity").then(r => r.json())
       ]);
       
       setSigns(signsRes || []);
       setDashboardData(dbRes || {});
       setBullPockets((assetsRes || []).slice(0, 10));
       setLiquidityDrains((drainRes.draining_assets || []).slice(0, 10));
+      setNetLiquidity(netLiqRes);
     } catch (e) {
       console.error("Failed to fetch Command Centre data", e);
     }
@@ -131,6 +134,46 @@ export default function CommandCentre() {
           </span>
         </div>
       </div>
+
+      {/* Net Global Central Bank Liquidity Pulse Card */}
+      {netLiquidity && (
+        <div className="bg-gradient-to-r from-[#0c1220] via-[#0d1627] to-[#0a0e19] border border-emerald-500/25 p-4 rounded-2xl shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+              <Zap className="w-5 h-5 animate-pulse" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-mono font-bold text-white uppercase tracking-wider">
+                  Global Net Central Bank Liquidity
+                </span>
+                <span className="px-2 py-0.5 rounded-full text-[9px] font-mono font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                  {netLiquidity.regime_classification.toUpperCase()} REGIME
+                </span>
+              </div>
+              <p className="text-[10px] text-gray-400 font-mono mt-0.5">
+                Fed ($7.15T) + ECB ($7.42T) + BoJ ($5.28T) + PBoC ($6.84T) − US TGA/RRP ($1.10T)
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-6 font-mono">
+            <div className="text-left md:text-right">
+              <span className="text-[9px] text-gray-500 uppercase tracking-wider block">Total Net Liquidity</span>
+              <span className="text-lg font-black text-white block">
+                ${netLiquidity.net_liquidity_trillion_usd} Trillion USD
+              </span>
+            </div>
+
+            <div className="text-left md:text-right border-l border-gray-800/80 pl-4">
+              <span className="text-[9px] text-gray-500 uppercase tracking-wider block">30D Impulse Velocity</span>
+              <span className="text-lg font-black text-emerald-400 block flex items-center gap-1">
+                +{netLiquidity.velocity_30d_pct}% MoM
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Top: Today's Money Flow Signs (8 Cards) */}
       <div>

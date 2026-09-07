@@ -174,14 +174,14 @@ def generate_mock_data(db: Session):
         db.flush()
         tseries[ts["symbol"]] = db_ts
 
-    # 4. Generate daily observations and prices (2000-01-01 to 2026-06-20)
+    # 4. Generate daily observations and prices (2000-01-01 to present date)
     if is_serverless:
         start_date = date(2020, 1, 1)
-        end_date = date(2026, 6, 20)
+        end_date = date.today()
         dates = list(get_date_range(start_date, end_date))[::14]
     else:
         start_date = date(2000, 1, 1)
-        end_date = date(2026, 6, 20)
+        end_date = date.today()
         dates = list(get_date_range(start_date, end_date))
     n_days = len(dates)
 

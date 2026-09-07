@@ -501,3 +501,28 @@ class QuantAlert(Base):
     message = Column(Text)
     is_read = Column(Boolean, default=False)
     created_at = Column(DateTime, default=datetime.utcnow)
+
+class EarningsCalendar(Base):
+    __tablename__ = "earnings_calendar"
+    __table_args__ = (
+        Index("idx_earnings_date_symbol", "board_meeting_date", "symbol"),
+    )
+
+    id = Column(Integer, primary_key=True, index=True)
+    stock_id = Column(Integer, ForeignKey("stocks.id", ondelete="CASCADE"), nullable=True, index=True)
+    symbol = Column(String, index=True)
+    company_name = Column(String)
+    sector = Column(String, nullable=True)
+    board_meeting_date = Column(Date, index=True)
+    quarter_period = Column(String)  # e.g. "Q1 FY27", "Q2 FY27"
+    purpose = Column(String, default="Financial Results & Dividend")
+    status = Column(String, default="Upcoming")  # Upcoming, Declared Today, Post-Results
+    consensus_eps_est = Column(Float, nullable=True)
+    consensus_sales_est = Column(Float, nullable=True)
+    actual_eps = Column(Float, nullable=True)
+    actual_sales = Column(Float, nullable=True)
+    prior_pat_yoy_pct = Column(Float, nullable=True)
+    surprise_pct = Column(Float, nullable=True)
+    price_reaction_pct = Column(Float, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+

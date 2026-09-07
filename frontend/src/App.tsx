@@ -4,6 +4,7 @@ import Header from "./components/Header";
 
 // Quant Platform Pages
 const Dashboard = lazy(() => import("./pages/Dashboard"));
+const EarningsCalendar = lazy(() => import("./pages/EarningsCalendar"));
 const StockUniverse = lazy(() => import("./pages/StockUniverse"));
 const Screener = lazy(() => import("./pages/Screener"));
 const StrategyBuilder = lazy(() => import("./pages/StrategyBuilder"));
@@ -112,6 +113,8 @@ export default function App() {
             // Equity Quant Modules
             case "dashboard":
               return <Dashboard />;
+            case "earnings-calendar":
+              return <EarningsCalendar />;
             case "stock-universe":
               return <StockUniverse onSelectStock={handleSelectStock} />;
             case "screener":
