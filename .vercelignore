@@ -1,15 +1,38 @@
-# Exclude the backend development server directory — the api/ directory is the serverless entry point
+# Exclude backend and virtual environments
 backend/
-backend/venv/
-
-# Virtual environments
 venv/
 .venv/
+node_modules/
 
 # Database files
 *.db
 *.db-journal
 
-# Scratch and temporary files
+# Extensions and other local projects
+boiler-3d/
+gadarwara-extension/
+gadarwara-pivision-symbol/
+
+# Scratch, logs, and artifacts
 scratch/
+brain/
 .gemini/
+*.log
+*.scpt
+*.png
+*.pdf
+*.txt
+*.html
+!frontend/dist/index.html
+!frontend/index.html
+
+# Local bulletin scripts
+generate_bulletin*.py
+run_daily_morning_bulletin.py
+send_email*.py
+send_gmail_bulletin.py
+start_disclosure_radar.sh
+status_disclosure_radar.sh
+stop_disclosure_radar.sh
+test_*.sh
+daily_morning_runner.sh
