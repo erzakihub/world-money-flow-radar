@@ -21,8 +21,10 @@ brain/
 *.scpt
 *.png
 *.pdf
-*.txt
-*.html
+
+# Allow requirements.txt and index.html
+!api/requirements.txt
+!requirements.txt
 !frontend/dist/index.html
 !frontend/index.html
 

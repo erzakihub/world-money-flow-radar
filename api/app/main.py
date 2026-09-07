@@ -2204,11 +2204,11 @@ def trigger_data_update(db: Session = Depends(get_db)):
 # =====================================================================
 @app.get("/api/earnings/calendar")
 def get_earnings_calendar(
+    response: Response,
     window: Optional[str] = "upcoming",
     sector: Optional[str] = None,
     search: Optional[str] = None,
     limit: int = 100,
-    response: Response = None,
     db: Session = Depends(get_db)
 ):
     if response:
@@ -2260,7 +2260,7 @@ def get_earnings_calendar(
     ]
 
 @app.get("/api/earnings/stats")
-def get_earnings_stats(response: Response = None, db: Session = Depends(get_db)):
+def get_earnings_stats(response: Response, db: Session = Depends(get_db)):
     if response:
         response.headers["Cache-Control"] = "public, s-maxage=300, stale-while-revalidate=86400"
     today = date.today()
@@ -2301,7 +2301,7 @@ def get_earnings_stats(response: Response = None, db: Session = Depends(get_db))
 # GLOBAL NET LIQUIDITY GAUGE
 # =====================================================================
 @app.get("/api/macro/net-liquidity")
-def get_net_liquidity_summary(response: Response = None, db: Session = Depends(get_db)):
+def get_net_liquidity_summary(response: Response, db: Session = Depends(get_db)):
     if response:
         response.headers["Cache-Control"] = "public, s-maxage=300, stale-while-revalidate=86400"
     # Net Global Central Bank Liquidity: (Fed + ECB + BoJ + PBoC) - (US TGA + US RRP)
