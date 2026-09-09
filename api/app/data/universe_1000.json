@@ -4,7 +4,7 @@
     "min_market_cap_cr": 3000,
     "min_market_cap_inr": 30000000000,
     "tradingview_total_count": 2064,
-    "nse_symbol_count": 1030,
+    "nse_symbol_count": 1061,
     "universe_limit": 2500,
     "generated_at": "2026-08-13T07:02:49.510065Z"
   },
@@ -9350,6 +9350,213 @@
       "industry": "EMS & PCB Assemblies",
       "market_cap_basic": 8500000000,
       "close": 410.0
+    },
+    {
+      "symbol": "ARMANFIN",
+      "name": "ARMANFIN",
+      "description": "Arman Financial Services Limited",
+      "sector": "Watchlist Priority",
+      "industry": "Corporate Disclosures",
+      "market_cap_basic": 5000000000,
+      "close": 100.0
+    },
+    {
+      "symbol": "LALITHAA",
+      "name": "LALITHAA",
+      "description": "Lalithaa Jewellery Mart Limited",
+      "sector": "Watchlist Priority",
+      "industry": "Corporate Disclosures",
+      "market_cap_basic": 5000000000,
+      "close": 100.0
+    },
+    {
+      "symbol": "NAM-INDIA",
+      "name": "NAM-INDIA",
+      "description": "NIPPON LIFE INDIA ASSET MANAGEMENT LIMITED",
+      "sector": "Watchlist Priority",
+      "industry": "Corporate Disclosures",
+      "market_cap_basic": 5000000000,
+      "close": 100.0
+    },
+    {
+      "symbol": "TRIL",
+      "name": "TRIL",
+      "description": "Transformers and Rectifiers (India) Limited",
+      "sector": "Watchlist Priority",
+      "industry": "Corporate Disclosures",
+      "market_cap_basic": 5000000000,
+      "close": 100.0
+    },
+    {
+      "symbol": "AKIKO",
+      "name": "AKIKO",
+      "description": "Akiko global",
+      "sector": "Watchlist Priority",
+      "industry": "Corporate Disclosures",
+      "market_cap_basic": 5000000000,
+      "close": 100.0
+    },
+    {
+      "symbol": "AMIC",
+      "name": "AMIC",
+      "description": "Amic Forging Limited",
+      "sector": "Watchlist Priority",
+      "industry": "Corporate Disclosures",
+      "market_cap_basic": 5000000000,
+      "close": 100.0
+    },
+    {
+      "symbol": "FELIX",
+      "name": "FELIX",
+      "description": "Felix Industries Ltd",
+      "sector": "Watchlist Priority",
+      "industry": "Corporate Disclosures",
+      "market_cap_basic": 5000000000,
+      "close": 100.0
+    },
+    {
+      "symbol": "MRPRAGRO",
+      "name": "MRPRAGRO",
+      "description": "MRP Agro Limited",
+      "sector": "Watchlist Priority",
+      "industry": "Corporate Disclosures",
+      "market_cap_basic": 5000000000,
+      "close": 100.0
+    },
+    {
+      "symbol": "NOVUS",
+      "name": "NOVUS",
+      "description": "Novus Loyalty Limited",
+      "sector": "Watchlist Priority",
+      "industry": "Corporate Disclosures",
+      "market_cap_basic": 5000000000,
+      "close": 100.0
+    },
+    {
+      "symbol": "PNGSREVA",
+      "name": "PNGSREVA",
+      "description": "PNGS Reva Diamond Jewellery Limited",
+      "sector": "Watchlist Priority",
+      "industry": "Corporate Disclosures",
+      "market_cap_basic": 5000000000,
+      "close": 100.0
+    },
+    {
+      "symbol": "RAJESHPOWER",
+      "name": "RAJESHPOWER",
+      "description": "RAJESH POWER SERVICES LIMITED",
+      "sector": "Watchlist Priority",
+      "industry": "Corporate Disclosures",
+      "market_cap_basic": 5000000000,
+      "close": 100.0
+    },
+    {
+      "symbol": "RNFI",
+      "name": "RNFI",
+      "description": "RNFi Services",
+      "sector": "Watchlist Priority",
+      "industry": "Corporate Disclosures",
+      "market_cap_basic": 5000000000,
+      "close": 100.0
+    },
+    {
+      "symbol": "SJLOGISTIC",
+      "name": "SJLOGISTIC",
+      "description": "S J Logistic",
+      "sector": "Watchlist Priority",
+      "industry": "Corporate Disclosures",
+      "market_cap_basic": 5000000000,
+      "close": 100.0
+    },
+    {
+      "symbol": "SATKARTAR",
+      "name": "SATKARTAR",
+      "description": "SAT KARTAR LIFE LIMITED",
+      "sector": "Watchlist Priority",
+      "industry": "Corporate Disclosures",
+      "market_cap_basic": 5000000000,
+      "close": 100.0
+    },
+    {
+      "symbol": "SHREEREF",
+      "name": "SHREEREF",
+      "description": "Shree Refrigerations Limited",
+      "sector": "Watchlist Priority",
+      "industry": "Corporate Disclosures",
+      "market_cap_basic": 5000000000,
+      "close": 100.0
+    },
+    {
+      "symbol": "SUNITATOOLS",
+      "name": "SUNITATOOLS",
+      "description": "Sunita Tools Limited",
+      "sector": "Watchlist Priority",
+      "industry": "Corporate Disclosures",
+      "market_cap_basic": 5000000000,
+      "close": 100.0
+    },
+    {
+      "symbol": "TELGE",
+      "name": "TELGE",
+      "description": "Telge Projects Limited",
+      "sector": "Watchlist Priority",
+      "industry": "Corporate Disclosures",
+      "market_cap_basic": 5000000000,
+      "close": 100.0
+    },
+    {
+      "symbol": "TEMBO",
+      "name": "TEMBO",
+      "description": "Tembo Global Industries Lt",
+      "sector": "Watchlist Priority",
+      "industry": "Corporate Disclosures",
+      "market_cap_basic": 5000000000,
+      "close": 100.0
+    },
+    {
+      "symbol": "VIGOR",
+      "name": "VIGOR",
+      "description": "Vigor Plast",
+      "sector": "Watchlist Priority",
+      "industry": "Corporate Disclosures",
+      "market_cap_basic": 5000000000,
+      "close": 100.0
+    },
+    {
+      "symbol": "VIVIANA",
+      "name": "VIVIANA",
+      "description": "Viviana Power",
+      "sector": "Watchlist Priority",
+      "industry": "Corporate Disclosures",
+      "market_cap_basic": 5000000000,
+      "close": 100.0
+    },
+    {
+      "symbol": "VPAL",
+      "name": "VPAL",
+      "description": "Vegorama Punjabi Angithi Limited",
+      "sector": "Watchlist Priority",
+      "industry": "Corporate Disclosures",
+      "market_cap_basic": 5000000000,
+      "close": 100.0
+    },
+    {
+      "symbol": "SILKFLEX",
+      "name": "SILKFLEX",
+      "description": "Silkflex Polymers India Limited",
+      "sector": "Watchlist Priority",
+      "industry": "Corporate Disclosures",
+      "market_cap_basic": 5000000000,
+      "close": 100.0
+    },
+    {
+      "symbol": "TIPCO",
+      "name": "TIPCO",
+      "description": "Tipco Engineering India Limited",
+      "sector": "Watchlist Priority",
+      "industry": "Corporate Disclosures",
+      "market_cap_basic": 5000000000,
+      "close": 100.0
     }
   ]
 }

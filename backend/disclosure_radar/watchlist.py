@@ -40,7 +40,7 @@ WATCHLIST: List[Dict[str, Any]] = [
     {
         "name": "BSE Limited",
         "symbol": "BSE",
-        "bse_code": "540133",
+        "bse_code": "",
         "aliases": ["BSE LIMITED", "BOMBAY STOCK EXCHANGE", "BSE"]
     },
     {
@@ -58,7 +58,7 @@ WATCHLIST: List[Dict[str, Any]] = [
     {
         "name": "Eternal Ltd",
         "symbol": "ETERNAL",
-        "bse_code": "",
+        "bse_code": "543320",
         "aliases": ["ETERNAL LIMITED", "ETERNAL LTD", "ZOMATO LIMITED", "ETERNAL", "ZOMATO"]
     },
     {
@@ -82,13 +82,13 @@ WATCHLIST: List[Dict[str, Any]] = [
     {
         "name": "ICICI AMC",
         "symbol": "ICICIAMC",
-        "bse_code": "",
+        "bse_code": "544658",
         "aliases": ["ICICI PRUDENTIAL ASSET", "ICICI AMC", "ICICI PRUDENTIAL MUTUAL", "ICICIPRULI"]
     },
     {
         "name": "Jeena Sikho Lifecare Limited",
         "symbol": "JSLL",
-        "bse_code": "543513",
+        "bse_code": "544476",
         "aliases": ["JEENA SIKHO", "JSLL", "SHUDDHI"]
     },
     {
@@ -100,7 +100,7 @@ WATCHLIST: List[Dict[str, Any]] = [
     {
         "name": "Lenskart Solutions Ltd",
         "symbol": "LENSKART",
-        "bse_code": "",
+        "bse_code": "544600",
         "aliases": ["LENSKART SOLUTIONS", "LENSKART"]
     },
     {
@@ -110,15 +110,15 @@ WATCHLIST: List[Dict[str, Any]] = [
         "aliases": ["LLOYDS METALS", "LLOYDSME"]
     },
     {
-        "name": "Lalitha Jewellers",
+        "name": "Lalithaa Jewellery Mart Limited",
         "symbol": "LALITHAA",
-        "bse_code": "",
-        "aliases": ["LALITHA JEWELLER", "LALITHAA JEWELLERY"]
+        "bse_code": "544879",
+        "aliases": ["LALITHAA JEWELLERY", "LALITHA JEWELLER", "LALITHA JEWELLERS", "LALITHAA", "LALITHA", "LALITHAA JEWELLERY MART"]
     },
     {
         "name": "Meesho Ltd",
         "symbol": "MEESHO",
-        "bse_code": "",
+        "bse_code": "544632",
         "aliases": ["MEESHO", "FASHNEAR TECHNOLOGIES"]
     },
     {
@@ -154,7 +154,7 @@ WATCHLIST: List[Dict[str, Any]] = [
     {
         "name": "Shadowfax Technologies Ltd",
         "symbol": "SHADOWFAX",
-        "bse_code": "",
+        "bse_code": "544685",
         "aliases": ["SHADOWFAX TECHNOLOGIES", "SHADOWFAX"]
     },
     {
@@ -220,19 +220,19 @@ WATCHLIST: List[Dict[str, Any]] = [
     {
         "name": "Aimtron Electronics",
         "symbol": "AIMTRON",
-        "bse_code": "544186",
+        "bse_code": "",
         "aliases": ["AIMTRON ELECTRONICS", "AIMTRON"]
     },
     {
         "name": "Akiko global",
         "symbol": "AKIKO",
-        "bse_code": "544203",
+        "bse_code": "",
         "aliases": ["AKIKO GLOBAL", "AKIKO"]
     },
     {
         "name": "Amic Forging Limited",
         "symbol": "AMIC",
-        "bse_code": "544036",
+        "bse_code": "544037",
         "aliases": ["AMIC FORGING", "AMIC"]
     },
     {
@@ -256,7 +256,7 @@ WATCHLIST: List[Dict[str, Any]] = [
     {
         "name": "Felix Industries Ltd",
         "symbol": "FELIX",
-        "bse_code": "540842",
+        "bse_code": "",
         "aliases": ["FELIX INDUSTRIES", "FELIX"]
     },
     {
@@ -268,13 +268,13 @@ WATCHLIST: List[Dict[str, Any]] = [
     {
         "name": "MRP Agro Limited",
         "symbol": "MRPRAGRO",
-        "bse_code": "543264",
-        "aliases": ["MRP AGRO", "MRPRAGRO"]
+        "bse_code": "543262",
+        "aliases": ["MRP AGRO", "MRPRAGRO", "MRP"]
     },
     {
-        "name": "Novus loyality",
+        "name": "Novus Loyalty Limited",
         "symbol": "NOVUS",
-        "bse_code": "",
+        "bse_code": "544735",
         "aliases": ["NOVUS LOYALTY", "NOVUS LOYALITY", "NOVUS"]
     },
     {
@@ -286,55 +286,55 @@ WATCHLIST: List[Dict[str, Any]] = [
     {
         "name": "Oriana Power",
         "symbol": "ORIANA",
-        "bse_code": "543958",
+        "bse_code": "",
         "aliases": ["ORIANA POWER", "ORIANA"]
     },
     {
-        "name": "PNGS REVA",
-        "symbol": "PNGS",
-        "bse_code": "544275",
-        "aliases": ["PNGS REVA", "PNGS GARGI", "PNGS"]
+        "name": "PNGS Reva Diamond Jewellery Limited",
+        "symbol": "PNGSREVA",
+        "bse_code": "544718",
+        "aliases": ["PNGS REVA", "PNGS REVA DIAMOND", "PNGSREVA", "PNGS GARGI", "PNGS"]
     },
     {
         "name": "Purple United Sales Limited",
         "symbol": "PURPLEUTED",
-        "bse_code": "544230",
+        "bse_code": "",
         "aliases": ["PURPLE UNITED", "PURPLE UNITED SALES", "PURPLEUTED", "PURPLE"]
     },
     {
         "name": "RAJESH POWER SERVICES LIMITED",
         "symbol": "RAJESHPOWER",
-        "bse_code": "544289",
-        "aliases": ["RAJESH POWER", "RAJESHPOWER"]
+        "bse_code": "544291",
+        "aliases": ["RAJESH POWER", "RAJESHPOWER", "RAJESH"]
     },
     {
         "name": "RNFi Services",
         "symbol": "RNFI",
-        "bse_code": "544215",
+        "bse_code": "",
         "aliases": ["RNFI SERVICES", "RNFI"]
     },
     {
         "name": "S J Logistic",
         "symbol": "SJLOGISTIC",
-        "bse_code": "544050",
+        "bse_code": "",
         "aliases": ["S J LOGISTIC", "SJ LOGISTIC", "SJLOGISTIC"]
     },
     {
         "name": "Saj Hotels Limited",
         "symbol": "SAJHOTELS",
-        "bse_code": "544259",
+        "bse_code": "",
         "aliases": ["SAJ HOTELS", "SAJ HOTEL", "SAJHOTELS", "SAJHOTEL"]
     },
     {
         "name": "SAT KARTAR LIFE LIMITED",
         "symbol": "SATKARTAR",
-        "bse_code": "544222",
+        "bse_code": "",
         "aliases": ["SAT KARTAR LIFE", "SAT KARTAR", "SATKARTAR"]
     },
     {
         "name": "SEDEMAC MECHATRONICS LTD",
         "symbol": "SEDEMAC",
-        "bse_code": "",
+        "bse_code": "544723",
         "aliases": ["SEDEMAC MECHATRONICS", "SEDEMAC"]
     },
     {
@@ -347,24 +347,24 @@ WATCHLIST: List[Dict[str, Any]] = [
         "name": "Sunita Tools Limited",
         "symbol": "SUNITATOOLS",
         "bse_code": "544001",
-        "aliases": ["SUNITA TOOLS", "SUNITATOOLS"]
+        "aliases": ["SUNITA TOOLS", "SUNITATOOLS", "SUNITATOOL"]
     },
     {
-        "name": "Telgi Project",
-        "symbol": "TELGI",
-        "bse_code": "",
-        "aliases": ["TELGI PROJECT", "TELGE PROJECTS", "TELGI", "TELGE"]
+        "name": "Telge Projects Limited",
+        "symbol": "TELGE",
+        "bse_code": "544544",
+        "aliases": ["TELGE PROJECTS", "TELGI PROJECT", "TELGE", "TELGI"]
     },
     {
         "name": "Tembo Global Industries Lt",
         "symbol": "TEMBO",
-        "bse_code": "542663",
+        "bse_code": "",
         "aliases": ["TEMBO GLOBAL", "TEMBO"]
     },
     {
         "name": "Vigor Plast",
         "symbol": "VIGOR",
-        "bse_code": "544040",
+        "bse_code": "",
         "aliases": ["VIGOR PLAST", "VIGOR"]
     },
     {
@@ -376,7 +376,7 @@ WATCHLIST: List[Dict[str, Any]] = [
     {
         "name": "Viviana Power",
         "symbol": "VIVIANA",
-        "bse_code": "543594",
+        "bse_code": "",
         "aliases": ["VIVIANA POWER", "VIVIANA"]
     },
     {
@@ -418,7 +418,7 @@ WATCHLIST: List[Dict[str, Any]] = [
     {
         "name": "R R Kabel Limited",
         "symbol": "RRKABEL",
-        "bse_code": "543990",
+        "bse_code": "543981",
         "aliases": ["R R KABEL", "RR KABEL", "RRKABEL"]
     }
 ]
@@ -496,7 +496,7 @@ def remove_stock_from_watchlist(symbol_or_name: str) -> bool:
     save_custom_watchlist(filtered)
     return len(filtered) < initial_len
 
-def _names_reasonably_match(watchlist_name: str, api_name: str) -> bool:
+def _names_reasonably_match(watchlist_item: Any, api_name: str) -> bool:
     """
     Cross-verify that the company name from the API is reasonably consistent
     with the expected watchlist company. This prevents BSE exchange-level filings
@@ -505,35 +505,56 @@ def _names_reasonably_match(watchlist_name: str, api_name: str) -> bool:
 
     Returns True if:
     - Either name is empty (can't verify, allow it)
-    - The first significant word of one appears in the other
-    - At least 2 words overlap between the two names
+    - Watchlist official name or any alias appears in API name (or vice versa)
+    - Meaningful word stem overlap exists between the names/aliases
     """
-    if not watchlist_name or not api_name:
+    if not api_name:
         return True
+
+    # Support passing either dict item or str name for backwards compatibility
+    if isinstance(watchlist_item, dict):
+        watchlist_name = watchlist_item.get("name", "")
+        aliases = watchlist_item.get("aliases", [])
+    else:
+        watchlist_name = str(watchlist_item or "")
+        aliases = []
 
     w_clean = clean_string(watchlist_name)
     a_clean = clean_string(api_name)
 
-    # Exact match (after cleaning)
-    if w_clean == a_clean:
+    if not w_clean:
         return True
 
-    # One contains the other
-    if w_clean in a_clean or a_clean in w_clean:
+    # Exact or substring match of official name
+    if w_clean == a_clean or w_clean in a_clean or a_clean in w_clean:
         return True
 
-    # Word overlap check
+    # Check aliases
+    for alias in aliases:
+        al_clean = clean_string(alias)
+        if al_clean and (al_clean in a_clean or a_clean in al_clean):
+            return True
+
+    # Stem / prefix word overlap check
     stop_words = {"LIMITED", "LTD", "PRIVATE", "PVT", "THE", "OF", "AND", "INDIA",
                   "INDUSTRIES", "COMPANY", "CORP", "CORPORATION", "INC", "SERVICES"}
-    w_words = set(w_clean.split()) - stop_words
-    a_words = set(a_clean.split()) - stop_words
+    w_words = [w for w in w_clean.split() if w not in stop_words]
+    for al in aliases:
+        for w in clean_string(al).split():
+            if w not in stop_words:
+                w_words.append(w)
+    a_words = [w for w in a_clean.split() if w not in stop_words]
 
-    if not w_words or not a_words:
-        return True
+    for w1 in w_words:
+        for w2 in a_words:
+            if w1 == w2:
+                return True
+            # Prefix stem match (e.g. LALITHA / LALITHAA, JEWELLER / JEWELLERY)
+            if len(w1) >= 4 and len(w2) >= 4:
+                if w1.startswith(w2) or w2.startswith(w1):
+                    return True
 
-    overlap = w_words & a_words
-    # Require at least 1 meaningful word overlap
-    return len(overlap) >= 1
+    return False
 
 
 def match_watchlist(
@@ -564,7 +585,7 @@ def match_watchlist(
         item_code = str(item.get("bse_code", "")).strip()
         if code and item_code and code == item_code:
             # Cross-verify: does the filing company name match the expected company?
-            if _names_reasonably_match(item["name"], company_name):
+            if _names_reasonably_match(item, company_name):
                 return item
             else:
                 # BSE code matched but company name is completely different

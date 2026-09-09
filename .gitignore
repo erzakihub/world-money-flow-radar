@@ -50,3 +50,15 @@ Thumbs.db
 *.sln
 *.sw?
 .vercel
+
+# Radar runtime & local secrets
+backend/disclosure_radar/.env
+*.pid
+*.log
+*.pyc
+__pycache__/
+backend/disclosure_radar/latest_alerts.txt
+backend/disclosure_radar/bse_equity_master.json
+backend/disclosure_radar/nse_mainboard.csv
+backend/disclosure_radar/nse_sme.csv
+backend/disclosure_radar/disclosures_radar.db*
