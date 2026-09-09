@@ -9278,6 +9278,78 @@
       "industry": "Office Equipment/Supplies",
       "market_cap_basic": 30000807857,
       "close": 284
+    },
+    {
+      "symbol": "GSMFOILS",
+      "name": "GSMFOILS",
+      "description": "GSM Foils Limited",
+      "sector": "Process Industries",
+      "industry": "Packaging & Aluminum Foils",
+      "market_cap_basic": 2500000000,
+      "close": 182.5
+    },
+    {
+      "symbol": "CGRAPHICS",
+      "name": "CGRAPHICS",
+      "description": "Creative Graphics Solutions India Limited",
+      "sector": "Producer Manufacturing",
+      "industry": "Printing & Flexographic Plates",
+      "market_cap_basic": 3800000000,
+      "close": 215.0
+    },
+    {
+      "symbol": "VILAS",
+      "name": "VILAS",
+      "description": "Vilas Transcore Limited",
+      "sector": "Producer Manufacturing",
+      "industry": "Power Transformer Cores",
+      "market_cap_basic": 4200000000,
+      "close": 340.0
+    },
+    {
+      "symbol": "SAJHOTELS",
+      "name": "SAJHOTELS",
+      "description": "Saj Hotels Limited",
+      "sector": "Consumer Services",
+      "industry": "Hotels & Hospitality",
+      "market_cap_basic": 1800000000,
+      "close": 78.5
+    },
+    {
+      "symbol": "PURPLEUTED",
+      "name": "PURPLEUTED",
+      "description": "Purple United Sales Limited",
+      "sector": "Retail Trade",
+      "industry": "Apparel & Fashion Retail",
+      "market_cap_basic": 2100000000,
+      "close": 142.0
+    },
+    {
+      "symbol": "OBSCP",
+      "name": "OBSCP",
+      "description": "OBSC Perfection Limited",
+      "sector": "Producer Manufacturing",
+      "industry": "Precision Engineering Components",
+      "market_cap_basic": 3100000000,
+      "close": 128.0
+    },
+    {
+      "symbol": "ORIANA",
+      "name": "ORIANA",
+      "description": "Oriana Power Limited",
+      "sector": "Utilities",
+      "industry": "Solar & Renewable EPC",
+      "market_cap_basic": 52000000000,
+      "close": 2680.0
+    },
+    {
+      "symbol": "AIMTRON",
+      "name": "AIMTRON",
+      "description": "Aimtron Electronics Limited",
+      "sector": "Electronic Technology",
+      "industry": "EMS & PCB Assemblies",
+      "market_cap_basic": 8500000000,
+      "close": 410.0
     }
   ]
 }

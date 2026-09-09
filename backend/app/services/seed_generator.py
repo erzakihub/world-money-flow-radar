@@ -410,6 +410,26 @@ def generate_mock_data(db: Session):
         )
         calendar_entries.append(ec)
         
+    gsm_stock = next((s for s in all_stocks if s.symbol == "GSMFOILS"), None)
+    if gsm_stock:
+        calendar_entries.append(EarningsCalendar(
+            stock_id=gsm_stock.id,
+            symbol="GSMFOILS",
+            company_name="GSM Foils Limited",
+            sector=gsm_stock.sector,
+            board_meeting_date=today,
+            quarter_period="Monthly Update (Aug 2026)",
+            purpose="Monthly Business & Sales Update - Net Sales ₹10.71 Cr (-43.56% YoY)",
+            status="Declared Today",
+            consensus_eps_est=4.20,
+            consensus_sales_est=189691912.0,
+            actual_eps=3.10,
+            actual_sales=107081053.0,
+            prior_pat_yoy_pct=-43.56,
+            surprise_pct=-43.56,
+            price_reaction_pct=-2.40
+        ))
+
     db.bulk_save_objects(calendar_entries)
     db.commit()
     print(f"Database seeding completed successfully: 1,030 stocks, {len(calendar_entries)} earnings events!")
